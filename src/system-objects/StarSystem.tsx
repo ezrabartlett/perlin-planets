@@ -5,17 +5,20 @@ import Planet from './Planet';
 import Sun from './Sun';
 
 export type StarSystemProps = {
-    seed: number,
+    seed: number
     time: number
+    setCameraTarget?: Function
 }
 
 export default function StarSystem(props: StarSystemProps) {
   return (
     <>
       <ambientLight intensity={0} />
-      <Sun seed={props.seed}/>
-      {/*<ambientLight color={'white'} intensity={1} />*/}
-      <Planet seed={props.seed}/>
+      <Sun setCameraTarget={props.setCameraTarget} seed={props.seed}/>
+      {<ambientLight color={'white'} intensity={1} />}
+      <Planet setCameraTarget={props.setCameraTarget} orbitRadius={100} seed={props.seed}/>
+      <Planet setCameraTarget={props.setCameraTarget} orbitRadius={200} seed={props.seed}/>
+      <Planet setCameraTarget={props.setCameraTarget} orbitRadius={300} seed={props.seed}/>
     </>
   );
 }

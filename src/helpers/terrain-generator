@@ -1,0 +1,14 @@
+import alea from 'alea';
+import { createNoise2D, createNoise3D } from 'simplex-noise';
+
+const getTerrain = (x: number, y: number, z: number) => {
+    const seedFunction = alea('seed');
+    // use the seeded random function to initialize the noise function
+    const noise2D = createNoise3D(seedFunction);
+    return
+}
+
+const Functions = {
+}
+
+export default Functions
