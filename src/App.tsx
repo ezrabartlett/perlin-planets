@@ -1,26 +1,27 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { createRoot } from 'react-dom/client'
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
+import { ColorRepresentation } from 'three';
+import Box from '@mui/material/Box';
+import StarSystem from './system-objects/StarSystem';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div id="canvas-container">
+      <Box component="div" sx={{ height: '1000px', width: '100%' }}>
+        <Canvas camera={{ position: [0, 0, 200] }}>
+          <color attach="background" args={["black" as ColorRepresentation]} />
+          <OrbitControls/>
+          <ambientLight intensity={0} />
+          <StarSystem time={3} seed={3}/>
+        </Canvas>
+      </Box>
     </div>
   );
 }
 
-export default App;
+// @ts-ignore
+createRoot(document.getElementById('root')).render(<App />)
