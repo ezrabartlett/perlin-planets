@@ -15,8 +15,10 @@ export default function Planet(props: PlanetProps) {
     const meshRef = useRef<Mesh | null>(null);
     
     const handleCLicked = () => {
-        console.log(meshRef!=undefined && meshRef.current != undefined && meshRef.current.position)
-        props.setCameraTarget && props.setCameraTarget()
+        if(meshRef && meshRef.current){
+            console.log(meshRef.current.position)
+            props.setCameraTarget && props.setCameraTarget(meshRef)
+        }
     }
 
     return (
