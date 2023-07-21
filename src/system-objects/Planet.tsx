@@ -1,7 +1,8 @@
-import React, {useRef} from 'react';
+import React, {useRef, useEffect} from 'react';
 import { createRoot } from 'react-dom/client'
 import { MeshStandardMaterial, PointLight, Vector3, Mesh } from 'three';
 import { useState } from 'react';
+import TerrainGenerator from '../helpers/terrain-generator'
 export type PlanetProps = {
     seed: number
     orbitAngle?: Vector3
@@ -10,7 +11,7 @@ export type PlanetProps = {
 }
 
 export default function Planet(props: PlanetProps) {
-    const material = new MeshStandardMaterial({ color: 'green' })
+    const material = new MeshStandardMaterial({wireframe: true, color: 'blue' })
     const [position, setPosition] = useState(new Vector3(props.orbitRadius, 0, 0))
     const meshRef = useRef<Mesh | null>(null);
     
@@ -21,10 +22,14 @@ export default function Planet(props: PlanetProps) {
         }
     }
 
+    useEffect(() => {
+        TerrainGenerator.generatePlanet(meshRef, 'asdf')
+    }, []);
+
     return (
         <>
             <mesh ref={meshRef} onClick={handleCLicked} position={position} material={material}>
-                <sphereGeometry args={[16, 20, 20]}/>
+                <sphereGeometry args={[16, 40, 40]}/>
             </mesh>
         </>
     );

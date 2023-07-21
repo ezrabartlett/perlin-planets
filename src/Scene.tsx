@@ -30,6 +30,7 @@ export default function Scene(props: SceneProps) {
 
     return (
         <>
+            {<ambientLight color={'white'} intensity={0} />}
             <color attach="background" args={["black" as ColorRepresentation]} />
             <OrbitControls ref={cameraRef}/>
             <StarSystem setCameraTarget={setCameraTarget} time={3} seed={3}/>

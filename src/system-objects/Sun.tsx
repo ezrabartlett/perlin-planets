@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import { createRoot } from 'react-dom/client'
 import { MeshStandardMaterial, PointLight, Vector3,  Mesh } from 'three';
 import { useState } from 'react';
@@ -24,7 +24,7 @@ export default function Sun(props: SunProps) {
     <>
         <mesh ref={meshRef} castShadow={false} onClick={handleCLicked} material={new MeshStandardMaterial({ color: color, emissive: color })}>
             <sphereGeometry args={[36, 20, 20]}/>
-            <pointLight color={color} distance={1000} intensity={15} />
+            <pointLight color={color} distance={1000} intensity={8} />
         </mesh>
     </>
     );

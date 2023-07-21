@@ -13,9 +13,7 @@ export type StarSystemProps = {
 export default function StarSystem(props: StarSystemProps) {
   return (
     <>
-      <ambientLight intensity={0} />
       <Sun setCameraTarget={props.setCameraTarget} seed={props.seed}/>
-      {<ambientLight color={'white'} intensity={1} />}
       <Planet setCameraTarget={props.setCameraTarget} orbitRadius={100} seed={props.seed}/>
       <Planet setCameraTarget={props.setCameraTarget} orbitRadius={200} seed={props.seed}/>
       <Planet setCameraTarget={props.setCameraTarget} orbitRadius={300} seed={props.seed}/>
