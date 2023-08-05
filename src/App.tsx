@@ -10,7 +10,7 @@ export default function App() {
   return (
     <div id="canvas-container">
       <Box component="div" sx={{ height: '1000px', width: '100%' }}>
-        <Canvas camera={{ position: [0, 0, 200] }}>
+        <Canvas camera={{ position: [0, 0, 200] , far: 100000}}>
           <Scene/>
           <Stats/>
         </Canvas>
