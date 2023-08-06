@@ -39,7 +39,8 @@ export default function Planet(props: PlanetProps) {
     useFrame((state, delts) => {
         if (meshRef.current) {// && props.colorProfile===0) {
             meshRef.current.rotation.y += 0.001;
-            //meshRef.current.position.x += .1
+            //console.log(meshRef.current.geometry.getAttribute("temperature"))
+            meshRef.current.position.x += 1
         }
     })
 
@@ -54,7 +55,7 @@ export default function Planet(props: PlanetProps) {
                 <PlanetGeometry baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.seed} meshRef={meshRef} colorProfile={props.colorProfile} />
                 <mesh>
                     <sphereGeometry args={[radius, resolution*4, resolution*2]}/>
-                    <meshToonMaterial color={'#66a2d1'} gradientMap={threeTone}/>
+                    <meshToonMaterial color={'#66a2d1'} gradientMap={threeTone} />
                 </mesh>
             </mesh>
         </>

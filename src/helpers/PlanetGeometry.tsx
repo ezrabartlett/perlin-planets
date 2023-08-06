@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import { BoxGeometry, Color, Mesh, MeshToonMaterial, MeshPhongMaterial, ShaderMaterial, Vector3, Float32BufferAttribute, MeshStandardMaterial, NearestFilter, TextureLoader, Texture } from 'three';
@@ -43,14 +43,13 @@ const computeTemperature = (point: Vector3, baseTemperature: number, terrain: Te
 const PlanetGeometry = (props: PlanetGeometryProps) => {
   const meshRef = useRef<Mesh>(null);
   const terrain = new TerrainGenerator(props.seed, props.radius)
-  const colors: number[] = []
   const altitudes: number[] = []
   const temperatures: number[] = []
 
   const threeTone = useLoader(TextureLoader, require('../assets/textures/threeTone.jpg')) as Texture;
   threeTone.minFilter = NearestFilter
   threeTone.magFilter = NearestFilter
-
+  
   useEffect(() => {
     let geometry = meshRef.current!.geometry as BoxGeometry;
     let material = meshRef.current!.material as ShaderMaterial;
@@ -63,8 +62,6 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
 
       normalVector.multiplyScalar(terrain.getTerrain(normalVector.x, normalVector.y, normalVector.z))
       
-      let vColor = computeColor(normalVector, props.radius)
-      colors.push(vColor.r, vColor.g, vColor.b)
       altitudes.push(normalVector.length())
       temperatures.push(computeTemperature(normalVector, props.baseTemperature, terrain)
       )
@@ -78,29 +75,19 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
       geometry.attributes.position.setY(i, y)
       geometry.attributes.position.setZ(i, z)
     }
-
-    geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
     geometry.setAttribute('altitude', new Float32BufferAttribute(altitudes, 1));
     geometry.setAttribute('temperature', new Float32BufferAttribute(temperatures, 1));
     // Just here so I remember how to do uniforms
     material.uniforms.time = {value: 1.0}
-    if(props.colorProfile === 1){
-      material.uniforms.grassColor = {value: [100.0/255.0, 41.0/255.0, 38.0/255.0, 1.0]}
-    }
-    material.uniforms.radius = {
-      value: props.radius
-    }
-    meshRef.current!.geometry.attributes.position.needsUpdate = true;
+    
     geometry.computeVertexNormals()
-    //.vertices.forEach(vertex => vertex.normalize());
-
   }, []);
 
   return (
     <>
       <mesh ref={meshRef}>
         {<boxGeometry args={[1, 1, 1, props.resolution, props.resolution, props.resolution]} />}
-        <PlanetMaterial/>
+
 
 
         <CustomShaderMaterial
@@ -110,8 +97,12 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
           silent
           uniforms={{
             grassColor: {
-              value: [10.0/285.0,157.0/285.0,117.0/285.0, 1.0],
+              value: (props.colorProfile === 1)? [10.0/285.0,157.0/285.0,117.0/285.0, 1.0] : [100.0/255.0, 41.0/255.0, 38.0/255.0, 1.0],
             },
+
+            radius: {
+              value: props.radius
+            }
           }}
           gradientMap={threeTone}
           // ...
