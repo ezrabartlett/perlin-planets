@@ -79,13 +79,13 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
     geometry.setAttribute('temperature', new Float32BufferAttribute(temperatures, 1));
     // Just here so I remember how to do uniforms
     material.uniforms.time = {value: 1.0}
-    
+
     geometry.computeVertexNormals()
   }, []);
 
   return (
     <>
-      <mesh ref={meshRef}>
+      <mesh ref={meshRef} renderOrder={2}>
         {<boxGeometry args={[1, 1, 1, props.resolution, props.resolution, props.resolution]} />}
 
 

@@ -6,6 +6,7 @@ export type SunProps = {
     seed: string
     position?: Vector3
     setCameraTarget?: Function
+    radius: number
 }
 
 export default function Sun(props: SunProps) {
@@ -15,23 +16,20 @@ export default function Sun(props: SunProps) {
 
     const handleCLicked = (event: any) => {
         if(meshRef && meshRef.current){
-            console.log(meshRef.current.position)
             props.setCameraTarget && props.setCameraTarget(meshRef)
-            event.stopPropagation()
+            event && event.stopPropagation()
         }
     }
 
     useEffect(() => {
-        if(meshRef && meshRef.current){
-            props.setCameraTarget && props.setCameraTarget(meshRef)
-        }
+        props.setCameraTarget && props.setCameraTarget(meshRef)
     }, [])
 
     return (
     <>
         <mesh ref={meshRef} castShadow={false} onClick={handleCLicked} material={new MeshStandardMaterial({ color: 'color', emissive: '#ffdd00' })}>
-            <sphereGeometry args={[66, 20, 20]}/>
-            <pointLight color={color} distance={1000} intensity={0.5} />
+            <sphereGeometry args={[props.radius, 30, 30]}/>
+            <pointLight color={color} distance={100000} intensity={0.5} />
         </mesh>
     </>
     );

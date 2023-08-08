@@ -1,7 +1,7 @@
-import { OrbitControls , PerspectiveCamera} from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera} from '@react-three/drei';
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client'
-import { ColorRepresentation, Mesh, BufferGeometry, NormalBufferAttributes, Material, Vector3, Camera, Quaternion } from 'three';
+import { ColorRepresentation, Mesh, BufferGeometry, NormalBufferAttributes, Material, Vector3, Camera, Quaternion} from 'three';
 import StarSystem from './system-objects/StarSystem';
 import { useFrame, useThree } from '@react-three/fiber';
 import { lerp } from 'three/src/math/MathUtils';
@@ -20,42 +20,95 @@ export type SceneProps = {
 export default function Scene(props: SceneProps) {
     const orbitCameraRef = useRef<any>(null)
     const thirdPersonCameraRef = useRef<any>(null)
-
+    const orbitCamera = useRef<any>(null)
     const shipRef = useRef<Mesh | null>(null);
-    let [targetRef, setTargetRef] = useState(useRef<Mesh | null>(null));
+    let targetRef = useRef<Mesh | null>(null);
     const { set, scene } = useThree();
-
+    const orbitCameraPosition = new Vector3(0, 0, 400)
+    let lerping = false
+    let lerpStart = Date.now()
+    let offSet = new Vector3(0,0,0)
+    let startingCameraTarget = new Vector3(0,0,0)
+    let startingCameraPos = new Vector3(0,0,0)
     let [useOrbitCamera, setUseOrbitCamera] = useState(true);
+    const lerpTime = 0.3;
+
+    const { size, camera } = useThree(); // Using the useThree hook to get size and camera
 
     useEffect(() => {
-        console.log(useOrbitCamera)
         if(useOrbitCamera) {
-            set({ camera: orbitCameraRef.current });
+            set({ camera: orbitCamera.current });
         } else {
             set({ camera: thirdPersonCameraRef.current });
         }
     }, [useOrbitCamera])
 
-    const handleKeyDown = (e: Event) => {
-
+    const switchCamera = () => {
+        setUseOrbitCamera(!useOrbitCamera)
     }
-    const handleKeyUp = (e: Event) => {
-        console.log(e.code)
-        if(e.code === 'Space') {
+
+    const setCameraTarget = (newTarget: meshRefObject) => {
+        console.log(window.window.screen.width/window.screen.height)
+        if(!useOrbitCamera || newTarget === targetRef) {
+            return
+        }
+
+        const targetPos = orbitCameraRef.current.target.clone()
+        const cameraPos = orbitCamera.current.position.clone()
+
+        startingCameraTarget.copy(targetPos)
+        startingCameraPos.copy(cameraPos)
+
+        offSet.subVectors(cameraPos, targetPos)
+
+        lerpStart = Date.now()
+        lerping = true;
+        orbitCameraRef.current.target = targetPos
+        
+        targetRef = newTarget
+    }
+
+    window.addEventListener("keyup", (event) => {
+        if( event.code === 'Space') {
             setUseOrbitCamera(!useOrbitCamera)
         }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('keyup', handleKeyUp)
+    })
+
+    useFrame((state, delts) => {
+        if(targetRef && targetRef.current && orbitCameraRef && orbitCameraRef.current) {
+            orbitCameraPosition.copy(orbitCamera.current.position)
+
+            if (lerping) {
+                const targetPos = targetRef.current.position
+                const cameraPos = orbitCameraRef.current.object.position
+                
+                let now = Date.now()
+                let alpha = ((now-lerpStart)/(lerpTime*1000))
+                
+                orbitCameraRef.current.target.lerpVectors(startingCameraTarget, targetPos, alpha)
+                cameraPos.lerpVectors(startingCameraPos, new Vector3().addVectors(targetPos, offSet), alpha)
+                //cameraPos.lerpVectors(targetPos.clone().add(offSet), alpha)
+
+                if((now-lerpStart)>lerpTime*1000) {
+                    lerping = false;
+                }
+            } else {
+                orbitCameraRef.current.target = targetRef.current.position
+            }
+        }
+    }) 
 
     return (
         <>
             {<ambientLight color={'white'} intensity={.3} />}
             <color attach="background" args={["black" as ColorRepresentation]} />
-            <ThirdPersonCamera cameraRef={thirdPersonCameraRef} target={shipRef}/>
-            <OrbitCamera cameraRef={orbitCameraRef} startingPosition={new Vector3(-400, 400, 400)} target={targetRef} />
-            <StarSystem setCameraTarget={setTargetRef} time={3} seed={'Test Seed'}/>
-            <Ship startingPosition={new Vector3(0, 100, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={()=>{}} />
+            {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} target={shipRef}/>}
+            
+            <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={100000}/>
+            <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
+
+            <StarSystem setCameraTarget={setCameraTarget} time={3} seed={'Test Seed'}/>
+            <Ship startingPosition={new Vector3(3000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
         </>
     );
 }

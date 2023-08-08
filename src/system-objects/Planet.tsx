@@ -21,7 +21,7 @@ export default function Planet(props: PlanetProps) {
     const [position, setPosition] = useState(new Vector3(props.orbitRadius, 0, 0))
     const meshRef = useRef<Mesh | null>(null);
     const radius = props.radius
-    const resolution = 80
+    const resolution = 180
     const baseTemperature = 100
 
     const threeTone = useLoader(TextureLoader, require('../assets/textures/threeTone.jpg')) as Texture;
@@ -36,11 +36,11 @@ export default function Planet(props: PlanetProps) {
         }
     }
 
-    useFrame((state, delts) => {
+    useFrame((state, delta) => {
         if (meshRef.current) {// && props.colorProfile===0) {
-            meshRef.current.rotation.y += 0.001;
+            meshRef.current.rotation.y += 0.0*delta;
             //console.log(meshRef.current.geometry.getAttribute("temperature"))
-            meshRef.current.position.x += 1
+            // meshRef.current.position.x += 1
         }
     })
 
@@ -53,7 +53,7 @@ export default function Planet(props: PlanetProps) {
             <mesh ref={meshRef} onClick={handleCLicked} position={position}>
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
                 <PlanetGeometry baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.seed} meshRef={meshRef} colorProfile={props.colorProfile} />
-                <mesh>
+                <mesh renderOrder={1}>
                     <sphereGeometry args={[radius, resolution*4, resolution*2]}/>
                     <meshToonMaterial color={'#66a2d1'} gradientMap={threeTone} />
                 </mesh>

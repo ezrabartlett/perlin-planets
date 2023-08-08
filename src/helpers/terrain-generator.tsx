@@ -32,8 +32,9 @@ export default class TerrainGenerator {
     }
 
     getTerrain(x: number, y: number, z: number): number {
+        const scaleFactor = this.radius*.06;
         // use the seeded random function to initialize the noise function
-        return this.radius+this.baseNoise(x, y, z)+0.5*this.baseNoise((x+1000)*2, (y+1000)*2, (z+1000)*2)+0.25*this.baseNoise((x+1000)*4, (y+1000)*4, (z+1000)*4)+0.25*this.baseNoise((x+1000)*6, (y+1000)*6, (z+1000)*6)
+        return this.radius+this.baseNoise(x, y, z)*scaleFactor+0.5*this.baseNoise((x+1000)*2, (y+1000)*2, (z+1000)*2)*scaleFactor+0.25*this.baseNoise((x+1000)*4, (y+1000)*4, (z+1000)*4)+0.25*this.baseNoise((x+1000)*6, (y+1000)*6, (z+1000)*6)*scaleFactor
     }
 
     getNoise(x: number, y: number, z: number, scale: number): number {

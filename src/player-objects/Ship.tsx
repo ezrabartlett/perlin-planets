@@ -1,7 +1,9 @@
-import React from 'react';
-import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion} from 'three';
+import React, { useState } from 'react';
+import { useGLTF } from '@react-three/drei'
+import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion, MeshBasicMaterial, cylandar, Euler} from 'three';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { meshRefType } from '../types';
+import { UFOModel } from '../assets/models/Ufo'
 
 export type ShipProps = {
     startingPosition: Vector3
@@ -16,14 +18,116 @@ export default function Ship(props: ShipProps) {
     threeTone.minFilter = NearestFilter
     threeTone.magFilter = NearestFilter
 
+    const velocity = new Vector3(0, 0, 0)
+    const acceleration = new Vector3(0,0,0)
+    const accelerationConstant = 0
+    const dampingConstant = .95;
+    const maxSpeed = 2;
+    // @ts-ignore
+
+    const [roleLeft, setRoleLeft] = useState(0)
+    const [roleRight, setRoleRight] = useState(0)
+
+    const [yawLeft, setYawLeft] = useState(0)
+    const [yawRight, setYawRight] = useState(0)
+
+    const [pitchUp, setPitchUp] = useState(0)
+    const [pitchDown, setPitchDown] = useState(0)
+
+    const [accelerating, setAccelerating] = useState(0)
+
     const handleCLicked = (event: any) => {
         props.switchCamera()
     }
 
-    useFrame((state, delts) => {
-        if (meshRef.current) {// && props.colorProfile===0) {
-            meshRef.current.rotation.y += 0.002;
-            //meshRef.current.position.x += .1
+    window.addEventListener('keydown', (e) => {
+        //window.alert(e.code)
+        switch(e.code) {
+            case 'KeyQ':
+                setRoleRight(1)
+                break;
+            case 'KeyE':
+                setRoleLeft(1)
+                break;
+            case 'KeyA':
+                setYawLeft(1)
+                break;
+            case 'KeyD':
+                setYawRight(1)
+                break;
+            case 'KeyW':
+                setPitchDown(1)
+                break;
+            case 'KeyS':
+                setPitchUp(1)
+                break;
+            case 'ShiftLeft':
+                setAccelerating(1)
+                break;
+            default:
+                // code block
+
+
+        }
+    })
+    window.addEventListener('keyup', (e) => {
+        switch(e.code) {
+            case 'KeyQ':
+                setRoleRight(0)
+                break;
+            case 'KeyE':
+                setRoleLeft(0)
+                break;
+            case 'KeyA':
+                setYawLeft(0)
+                break;
+            case 'KeyD':
+                setYawRight(0)
+                break;
+            case 'KeyW':
+                setPitchDown(0)
+                break;
+            case 'KeyS':
+                setPitchUp(0)
+                break;
+            case 'ShiftLeft':
+                setAccelerating(0)
+                break;
+            default:
+                // code block
+        }
+    })
+
+    const accelerate = (delta: number) => {
+        if (meshRef.current) {
+            velocity.add(acceleration.normalize().multiplyScalar(accelerationConstant*delta*accelerating))
+            if(velocity.length()>=maxSpeed) {
+                velocity.normalize().multiplyScalar(maxSpeed)
+            }
+        }
+    }
+
+    const move = (delta: number) => {
+        if (meshRef.current) {
+            meshRef.current.position.add(velocity.multiplyScalar(delta))
+        }
+    }
+
+    const dampenVelocity = (delta: number) => {
+        velocity.multiplyScalar(dampingConstant*delta)
+    }
+
+    useFrame((state, delta) => {
+        if (meshRef.current) {
+            meshRef.current.getWorldDirection(acceleration)
+            meshRef.current.rotateZ((roleLeft-roleRight)*0.5*delta)
+            meshRef.current.rotateY((yawLeft-yawRight)*0.5*delta)
+            meshRef.current.rotateX((pitchDown-pitchUp)*0.5*delta)
+            //accelerationConstant += delta*
+            meshRef.current.translateZ((accelerating)*0.5*maxSpeed)
+            //accelerate(delta)
+            //move(delta)
+            //dampenVelocity(delta)
         }
     })
 
@@ -31,8 +135,20 @@ export default function Ship(props: ShipProps) {
         <>
             <mesh ref={meshRef} onClick={handleCLicked} position={props.startingPosition}>
                 <mesh>
-                    <boxGeometry args={[4, 2, 10]}/>
-                    <meshToonMaterial color={'#66a2d1'} gradientMap={threeTone} />
+                    <coneGeometry args={[0.8, 0.3]}/>
+                    <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />
+                </mesh>
+                <mesh rotation={new Euler(Math.PI, 0, 0)} position={new Vector3( 0, -0.27, 0)}>
+                    <coneGeometry args={[0.8, 0.2]}/>
+                    <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />
+                </mesh>
+                <mesh>
+                    <sphereGeometry args={[0.3, 20, 20]} />
+                    <meshToonMaterial color={'#8ecae6'} gradientMap={threeTone} />
+                </mesh>
+                <mesh position={ new Vector3( 0, -0.17, 0)}>
+                    <cylinderGeometry args={[0.8, 0.8, 0.03]}/>
+                    <meshToonMaterial color={'#f2e9e4'} gradientMap={threeTone} />
                 </mesh>
             </mesh>
         </>

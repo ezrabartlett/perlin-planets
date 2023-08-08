@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber'
-import {Camera, Vector3} from 'three'
+import {Camera, Euler, Vector3} from 'three'
 import { PerspectiveCamera} from '@react-three/drei'
 import { meshRefType } from '../types';
 
@@ -17,7 +17,7 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
    const target = props.target
 
    const calculateIdealOffset = () => {
-        const idealOffset = new Vector3(0, 10, -40);
+        const idealOffset = new Vector3(0, 1, -5);
         if (target.current) {
             idealOffset.applyQuaternion(target.current.quaternion)
             idealOffset.add(target.current.position)
@@ -26,13 +26,21 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
     }     
     
     const calculateIdealLookAt = () => {
-        const idealLookAt = new Vector3(0, 10, 50);
+        const idealLookAt = new Vector3(0, .4, 1.3);
         if (target.current) {
             idealLookAt.applyQuaternion(target.current.quaternion)
             idealLookAt.add(target.current.position)
         }
         return idealLookAt;
     }      
+
+    const calculateIdealRotation = () => {
+        const idealRotation = new Euler();
+        if (target.current) {
+            idealRotation.copy(target.current.rotation)
+        }
+        return idealRotation;
+    }
 
     useFrame((state, delta) => {
         const idealOffset = calculateIdealOffset();
@@ -42,10 +50,20 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
         currentLookAt.copy(idealLookAt);
 
         camera.current.position.copy(currentPosition)
-        camera.current.lookAt(currentLookAt)
+        //@ts-ignore
+        camera.current.rotation.copy(target.current.rotation)
+        camera.current.rotateY(Math.PI)
+        //const up = new Vector3(0, 1, 0);
+
+       // up.applyAxisAngle(new Vector3(0, 0, 1), target.current.rotation.z);
+
+        //camera.current.up.copy(up);
+       // camera.current.lookAt(currentLookAt)
+
+
     })
 
     return (
-        <PerspectiveCamera ref={props.cameraRef}/>
+        <PerspectiveCamera ref={props.cameraRef} fov={75} far={10000}/>
     );
 }
