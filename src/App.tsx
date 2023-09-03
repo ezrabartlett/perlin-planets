@@ -10,7 +10,7 @@ export default function App() {
   return (
     <div id="canvas-container">
       <Box component="div" sx={{ height: '1000px', width: '100%' }}>
-        <Canvas gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 100000}}>
+        <Canvas shadows gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 1000000}}>
           <Scene/>
           <Stats/>
         </Canvas>

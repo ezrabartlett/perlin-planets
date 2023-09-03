@@ -104,11 +104,11 @@ export default function Scene(props: SceneProps) {
             <color attach="background" args={["black" as ColorRepresentation]} />
             {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} target={shipRef}/>}
             
-            <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={100000}/>
+            <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={30000000}/>
             <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
 
-            <StarSystem setCameraTarget={setCameraTarget} time={3} seed={'Test Seed'}/>
-            <Ship startingPosition={new Vector3(3000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
+            <StarSystem cameraRef={orbitCamera} setCameraTarget={setCameraTarget} time={3} seed={'Test Seed'}/>
+            <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
         </>
     );
 }

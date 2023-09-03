@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGLTF } from '@react-three/drei'
-import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion, MeshBasicMaterial, cylandar, Euler} from 'three';
+import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion, MeshBasicMaterial, Euler} from 'three';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { meshRefType } from '../types';
 import { UFOModel } from '../assets/models/Ufo'
@@ -22,7 +22,7 @@ export default function Ship(props: ShipProps) {
     const acceleration = new Vector3(0,0,0)
     const accelerationConstant = 0
     const dampingConstant = .95;
-    const maxSpeed = 2;
+    const maxSpeed = 100;
     // @ts-ignore
 
     const [roleLeft, setRoleLeft] = useState(0)
@@ -129,13 +129,13 @@ export default function Ship(props: ShipProps) {
             //move(delta)
             //dampenVelocity(delta)
         }
-    })
+    }, -1)
 
     return (
         <>
             <mesh ref={meshRef} onClick={handleCLicked} position={props.startingPosition}>
                 <mesh>
-                    <coneGeometry args={[0.8, 0.3]}/>
+                    <coneGeometry args={[0.8, 0.3, 30, 8]}/>
                     <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />
                 </mesh>
                 <mesh rotation={new Euler(Math.PI, 0, 0)} position={new Vector3( 0, -0.27, 0)}>

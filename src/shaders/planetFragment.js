@@ -9,7 +9,6 @@ uniform float radius;
 uniform vec4 grassColor;
 
 void main() {
-    vec3 viewDirection = normalize(cameraPosition - vPosition);
     vec4 calculated_color = grassColor;
 
     if ( vTemperature <= 32.0 ) {

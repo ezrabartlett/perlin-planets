@@ -69,8 +69,6 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
       y = normalVector.y
       z = normalVector.z
 
-
-
       geometry.attributes.position.setX(i, x)
       geometry.attributes.position.setY(i, y)
       geometry.attributes.position.setZ(i, z)
@@ -87,9 +85,6 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
     <>
       <mesh ref={meshRef} renderOrder={2}>
         {<boxGeometry args={[1, 1, 1, props.resolution, props.resolution, props.resolution]} />}
-
-
-
         <CustomShaderMaterial
           baseMaterial={MeshToonMaterial}
           vertexShader={planetVertex}

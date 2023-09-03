@@ -64,6 +64,6 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
     })
 
     return (
-        <PerspectiveCamera ref={props.cameraRef} fov={75} far={10000}/>
+        <PerspectiveCamera ref={props.cameraRef} fov={75} far={3000000}/>
     );
 }

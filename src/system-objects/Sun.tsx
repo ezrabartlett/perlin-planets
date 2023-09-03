@@ -27,9 +27,9 @@ export default function Sun(props: SunProps) {
 
     return (
     <>
-        <mesh ref={meshRef} castShadow={false} onClick={handleCLicked} material={new MeshStandardMaterial({ color: 'color', emissive: '#ffdd00' })}>
+        <mesh ref={meshRef} onClick={handleCLicked} material={new MeshStandardMaterial({ color: 'color', emissive: '#ffdd00' })}>
             <sphereGeometry args={[props.radius, 30, 30]}/>
-            <pointLight color={color} distance={100000} intensity={0.5} />
+            <pointLight castShadow color={color} distance={3000000} intensity={0.5} />
         </mesh>
     </>
     );
