@@ -3,32 +3,33 @@ import { createRoot } from 'react-dom/client'
 import { MeshStandardMaterial, PointLight, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide} from 'three';
 import { useState } from 'react';
 import PlanetGeometry from '../helpers/PlanetGeometry';
-import TerrainGenerator from '../helpers/terrain-generator';
+import TerrainGenerator from '../helpers/TerrainGenerator';
 import { useFrame, useLoader } from '@react-three/fiber';
 
 // @ts-ignore
 import atmosphereFragment from '../shaders/atmosphere/atmosphereFragment.js'
 // @ts-ignore
 import atmosphereVertex from '../shaders/atmosphere/atmosphereVertex.js'
+import { PlanetAttributes } from '../types';
 
 //import TerrainGenerator from '../helpers/terrain-generator'
 //import CubeSphere from '../helpers/CubeSphere';
 export type PlanetProps = {
     seed: string
-    orbitAngle?: Vector3
-    orbitRadius: number
-    setCameraTarget?: Function
-    radius: number
+    
+    attributes: PlanetAttributes
+
     colorProfile: number
     cameraRef: React.MutableRefObject<Camera>
+    setCameraTarget?: Function
 }
 
 export default function Planet(props: PlanetProps) {
     const material = new MeshToonMaterial() // MeshStandardMaterial({color: 'blue' })
     const atmosphereRef = useRef<Mesh>(null);
-    const [position, setPosition] = useState(new Vector3(props.orbitRadius, 0, 0))
+    const [position, setPosition] = useState(new Vector3(props.attributes.orbitRadius, 0, 0))
     const meshRef = useRef<Mesh | null>(null);
-    const radius = props.radius
+    const radius = props.attributes.radius
     const resolution = 80
     const baseTemperature = 100
 
@@ -81,7 +82,7 @@ export default function Planet(props: PlanetProps) {
                 </mesh>
                 {<mesh ref={atmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, resolution*4, resolution*2]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.radius*1.2}}} />}
+                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
             </mesh>
         </>

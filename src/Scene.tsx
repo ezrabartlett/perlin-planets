@@ -8,6 +8,8 @@ import ThirdPersonCamera from './helpers/ThirdPersonCamera';
 import {  EffectComposer } from '@react-three/postprocessing';
 import { Atmospheres } from './helpers/Atmosphere';
 import PostProcessingEffects from './helpers/PostProcessingEffects';
+import RandomNumberGenerator from './helpers/RandomNumberGenorator';
+
 
 type meshRefObject = React.MutableRefObject<Mesh<BufferGeometry<NormalBufferAttributes>, Material | Material[]> | null>
 
@@ -22,15 +24,14 @@ export default function Scene(props: SceneProps) {
     const shipRef = useRef<Mesh | null>(null);
     let targetRef = useRef<Mesh | null>(null);
     const { set, scene } = useThree();
-    const orbitCameraPosition = new Vector3(0, 0, 2000000)
-    let lerping = false
-    let lerpStart = Date.now()
-    let offSet = new Vector3(0,0,0)
-    let startingCameraTarget = new Vector3(0,0,0)
-    let startingCameraPos = new Vector3(0,0,0)
+    const orbitCameraPosition = new Vector3(0, 0, 2000000);
+    let lerping = false;
+    let lerpStart = Date.now();
+    let offSet = new Vector3(0,0,0);
+    let startingCameraTarget = new Vector3(0,0,0);
+    let startingCameraPos = new Vector3(0,0,0);
     let [useOrbitCamera, setUseOrbitCamera] = useState(true);
     const lerpTime = 0.3;
-
     const { size, camera } = useThree(); // Using the useThree hook to get size and camera
 
     useEffect(() => {
@@ -105,7 +106,7 @@ export default function Scene(props: SceneProps) {
             <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={300000000}/>
             <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
 
-            <StarSystem cameraRef={orbitCamera} setCameraTarget={setCameraTarget} time={3} seed={'Test Seed'}/>
+            <StarSystem cameraRef={orbitCamera} setCameraTarget={setCameraTarget} time={3} seed={'new test seed'}/>
             <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
             {/* multisampling = { 8 } DEFAULT ANTI-ALIASING SETTING*/}
             {/* Posprocessing effect. Couldn't get it to work but should return later */}

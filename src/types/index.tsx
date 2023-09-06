@@ -8,8 +8,14 @@ export type atmosphereInfoType = {
     atmosphereRadius: number
 }
 
-export type planetAttributes = {
+export type PlanetAttributes = {
+    radius: number
+    rotationSpeed: number
     seaLevel: number
     baseTemperature: number
     humidity: number
+    moons: number
+    orbitRadius: number
+    orbitInclination: number
+    tilt: number 
 }

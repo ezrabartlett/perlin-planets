@@ -3,7 +3,7 @@ import { useFrame, useLoader } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import { BoxGeometry, Color, Mesh, MeshToonMaterial, MeshPhongMaterial, ShaderMaterial, Vector3, Float32BufferAttribute, MeshStandardMaterial, NearestFilter, TextureLoader, Texture } from 'three';
 import { meshRefType } from '../types';
-import TerrainGenerator from '../helpers/terrain-generator'
+import TerrainGenerator from './TerrainGenerator'
 import PlanetMaterial from './planetMaterial';
 import CustomShaderMaterial from 'three-custom-shader-material'
 // @ts-ignore
