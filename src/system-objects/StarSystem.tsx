@@ -14,10 +14,10 @@ export type StarSystemProps = {
 export default function StarSystem(props: StarSystemProps) {
   return (
     <>
-      <Sun setCameraTarget={props.setCameraTarget} radius={40400} seed={props.seed}/>
-      <Planet cameraRef={props.cameraRef} setCameraTarget={props.setCameraTarget} radius={105} orbitRadius={62980} seed={props.seed} colorProfile={0}/>
-      <Planet cameraRef={props.cameraRef} setCameraTarget={props.setCameraTarget} radius={310} orbitRadius={2980} seed={props.seed+props.seed} colorProfile={1}/>
-      <Planet cameraRef={props.cameraRef} setCameraTarget={props.setCameraTarget} radius={107910} orbitRadius={590380} seed={props.seed+props.seed+props.seed} colorProfile={0}/>
+      <Sun setCameraTarget={props.setCameraTarget} radius={400000} seed={props.seed}/>
+      <Planet cameraRef={props.cameraRef} setCameraTarget={props.setCameraTarget} radius={60000} orbitRadius={2502980} seed={props.seed} colorProfile={0}/>
+      <Planet cameraRef={props.cameraRef} setCameraTarget={props.setCameraTarget} radius={70000} orbitRadius={1072980} seed={props.seed+props.seed} colorProfile={1}/>
+      <Planet cameraRef={props.cameraRef} setCameraTarget={props.setCameraTarget} radius={107910} orbitRadius={1800380} seed={props.seed+props.seed+props.seed} colorProfile={0}/>
     </>
   );
 }

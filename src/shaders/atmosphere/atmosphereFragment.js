@@ -43,6 +43,6 @@ void main() {
     float dstToAtmosphereNear = hitInfo.x;
     float dstThroughAtmosphere = hitInfo.y;
     
-    gl_FragColor = vec4(vec3(102.0/255.0, 162.0/255.0, 209.0/255.0)*(dstThroughAtmosphere) / (2.0*uRadius), 1.0);
+    gl_FragColor = vec4(vec3(102.0/255.0, 162.0/255.0, 209.0/255.0), 1.0*(dstThroughAtmosphere) / (2.0*uRadius));
 }
 `;

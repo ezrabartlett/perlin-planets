@@ -1,21 +1,19 @@
 import { OrbitControls, PerspectiveCamera} from '@react-three/drei';
 import React, { useEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client'
 import { ColorRepresentation, Mesh, BufferGeometry, NormalBufferAttributes, Material, Vector3, Camera, Quaternion} from 'three';
 import StarSystem from './system-objects/StarSystem';
 import { useFrame, useThree } from '@react-three/fiber';
-import { lerp } from 'three/src/math/MathUtils';
 import Ship from './player-objects/Ship';
 import ThirdPersonCamera from './helpers/ThirdPersonCamera';
-import OrbitCamera from './helpers/OrbitCamera';
+import {  EffectComposer } from '@react-three/postprocessing';
+import { Atmospheres } from './helpers/Atmosphere';
+import PostProcessingEffects from './helpers/PostProcessingEffects';
 
 type meshRefObject = React.MutableRefObject<Mesh<BufferGeometry<NormalBufferAttributes>, Material | Material[]> | null>
 
 export type SceneProps = {
 
 }
-
-
 
 export default function Scene(props: SceneProps) {
     const orbitCameraRef = useRef<any>(null)
@@ -24,7 +22,7 @@ export default function Scene(props: SceneProps) {
     const shipRef = useRef<Mesh | null>(null);
     let targetRef = useRef<Mesh | null>(null);
     const { set, scene } = useThree();
-    const orbitCameraPosition = new Vector3(0, 0, 400)
+    const orbitCameraPosition = new Vector3(0, 0, 2000000)
     let lerping = false
     let lerpStart = Date.now()
     let offSet = new Vector3(0,0,0)
@@ -100,15 +98,18 @@ export default function Scene(props: SceneProps) {
 
     return (
         <>
-            {<ambientLight color={'white'} intensity={.3} />}
+            {<ambientLight color={'white'} intensity={.2} />}
             <color attach="background" args={["black" as ColorRepresentation]} />
             {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} target={shipRef}/>}
             
-            <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={30000000}/>
+            <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={300000000}/>
             <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
 
             <StarSystem cameraRef={orbitCamera} setCameraTarget={setCameraTarget} time={3} seed={'Test Seed'}/>
             <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
+            {/* multisampling = { 8 } DEFAULT ANTI-ALIASING SETTING*/}
+            {/* Posprocessing effect. Couldn't get it to work but should return later */}
+            {/* <PostProcessingEffects Atmospheres={[]} cameraRef={orbitCamera} />*/}
         </>
     );
 }
