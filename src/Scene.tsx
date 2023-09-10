@@ -18,6 +18,10 @@ export type SceneProps = {
 }
 
 export default function Scene(props: SceneProps) {
+
+    let [seed, setSeed] = useState('Ezra Bartlett')
+
+
     const orbitCameraRef = useRef<any>(null)
     const thirdPersonCameraRef = useRef<any>(null)
     const orbitCamera = useRef<any>(null)
@@ -30,6 +34,7 @@ export default function Scene(props: SceneProps) {
     let offSet = new Vector3(0,0,0);
     let startingCameraTarget = new Vector3(0,0,0);
     let startingCameraPos = new Vector3(0,0,0);
+    let [cameraIndex, setCameraIndex] = useState(1)
     let [useOrbitCamera, setUseOrbitCamera] = useState(true);
     const lerpTime = 0.3;
     const { size, camera } = useThree(); // Using the useThree hook to get size and camera
@@ -37,7 +42,9 @@ export default function Scene(props: SceneProps) {
     useEffect(() => {
         if(useOrbitCamera) {
             set({ camera: orbitCamera.current });
+            setCameraIndex(1)
         } else {
+            setCameraIndex(0)
             set({ camera: thirdPersonCameraRef.current });
         }
     }, [useOrbitCamera])
@@ -45,6 +52,19 @@ export default function Scene(props: SceneProps) {
     const switchCamera = () => {
         setUseOrbitCamera(!useOrbitCamera)
     }
+
+    function randomSeed(length: number) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          counter += 1;
+        }
+        return result;
+    }
+    
 
     const setCameraTarget = (newTarget: meshRefObject) => {
         console.log(window.window.screen.width/window.screen.height)
@@ -71,6 +91,11 @@ export default function Scene(props: SceneProps) {
         if( event.code === 'Space') {
             setUseOrbitCamera(!useOrbitCamera)
         }
+        window.addEventListener("keyup", (event) => {
+            if( event.code === 'KeyR') {
+                setSeed(randomSeed(5))
+            }
+        })
     })
 
     useFrame((state, delts) => {
@@ -106,7 +131,7 @@ export default function Scene(props: SceneProps) {
             <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={300000000}/>
             <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
 
-            <StarSystem cameraRef={orbitCamera} setCameraTarget={setCameraTarget} time={3} seed={'new test seed'}/>
+            <StarSystem cameraIndex={cameraIndex} orbitCamera={orbitCamera} thirdPersonCamera={thirdPersonCameraRef} setCameraTarget={setCameraTarget} time={3} seed={seed}/>
             <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
             {/* multisampling = { 8 } DEFAULT ANTI-ALIASING SETTING*/}
             {/* Posprocessing effect. Couldn't get it to work but should return later */}

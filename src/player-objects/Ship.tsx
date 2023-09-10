@@ -22,7 +22,6 @@ export default function Ship(props: ShipProps) {
     const acceleration = new Vector3(0,0,0)
     const accelerationConstant = 0
     const dampingConstant = .95;
-    const maxSpeed = 100;
     // @ts-ignore
 
     const [roleLeft, setRoleLeft] = useState(0)
@@ -35,6 +34,8 @@ export default function Ship(props: ShipProps) {
     const [pitchDown, setPitchDown] = useState(0)
 
     const [accelerating, setAccelerating] = useState(0)
+
+    const [maxSpeed, setMaxSpeed] = useState(10000)
 
     const handleCLicked = (event: any) => {
         props.switchCamera()
@@ -93,6 +94,13 @@ export default function Ship(props: ShipProps) {
             case 'ShiftLeft':
                 setAccelerating(0)
                 break;
+            case 'Enter':
+                if(maxSpeed === 10000){
+                    setMaxSpeed(100)
+                } else {
+                    setMaxSpeed(10000)                
+                }
+                break;
             default:
                 // code block
         }
@@ -128,6 +136,7 @@ export default function Ship(props: ShipProps) {
             //accelerate(delta)
             //move(delta)
             //dampenVelocity(delta)
+            console.log(maxSpeed)
         }
     }, -1)
 

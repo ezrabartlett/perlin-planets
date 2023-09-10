@@ -9,6 +9,7 @@ export type atmosphereInfoType = {
 }
 
 export type PlanetAttributes = {
+    seed: string
     radius: number
     rotationSpeed: number
     seaLevel: number
