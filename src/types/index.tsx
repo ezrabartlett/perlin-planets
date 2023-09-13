@@ -10,6 +10,24 @@ export type atmosphereInfoType = {
 
 export type PlanetAttributes = {
     seed: string
+    density: number
+    mass: number
+    radius: number
+    rotationSpeed: number
+    seaLevel: number
+    baseTemperature: number
+    humidity: number
+    moons: number
+    orbitRadius: number
+    orbitInclination: number
+    tilt: number 
+}
+
+export type moonAttributes = {
+    planet: number
+    hasAtmosphere: boolean
+    seed: string
+    planetMass: number
     radius: number
     rotationSpeed: number
     seaLevel: number

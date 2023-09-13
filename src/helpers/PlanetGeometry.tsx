@@ -18,6 +18,7 @@ type PlanetGeometryProps = {
   seed: string
   baseTemperature: number
   colorProfile: number
+  hasAtmosphere: boolean
 }
 
 const computeColor = (point: Vector3, radius: number) => {
@@ -85,7 +86,8 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
     <>
       <mesh ref={meshRef} renderOrder={2}>
         {<boxGeometry args={[1, 1, 1, props.resolution, props.resolution, props.resolution]} />}
-        <CustomShaderMaterial
+        { props.hasAtmosphere? 
+          <CustomShaderMaterial
           baseMaterial={MeshToonMaterial}
           vertexShader={planetVertex}
           fragmentShader={planetFragment}
@@ -102,7 +104,22 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
           gradientMap={threeTone}
           // ...
       />
+        :  <CustomShaderMaterial
+        baseMaterial={MeshToonMaterial}
+        silent
+        uniforms={{
+          grassColor: {
+            value: (props.colorProfile === 1)? [10.0/285.0,157.0/285.0,117.0/285.0, 1.0] : [100.0/255.0, 41.0/255.0, 38.0/255.0, 1.0],
+          },
 
+          radius: {
+            value: props.radius
+          }
+        }}
+        gradientMap={threeTone}
+        color={'grey'}
+        // ...
+    />}
 
       </mesh>
     </>

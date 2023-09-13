@@ -17,7 +17,7 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
    const target = props.target
 
    const calculateIdealOffset = () => {
-        const idealOffset = new Vector3(0, 1, -5);
+        const idealOffset = new Vector3(0, 0.5, -3);
         if (target.current) {
             idealOffset.applyQuaternion(target.current.quaternion)
             idealOffset.add(target.current.position)
