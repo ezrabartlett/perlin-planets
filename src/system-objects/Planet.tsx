@@ -51,7 +51,7 @@ export default function Planet(props: PlanetProps) {
     threeTone.magFilter = NearestFilter
 
     const orbitalPeriod = getOrbitalPeriod(props.attributes.orbitRadius, props.starMass)
-
+    console.log(orbitalPeriod)
     let alphaLast = 0
     let timeLast = 0
     const handleCLicked = (event: any) => {
@@ -65,7 +65,7 @@ export default function Planet(props: PlanetProps) {
 
     const getPlanetPosition = (delta: number = 0) => {
         const period = orbitalPeriod*60*60*1000
-        const alpha = ( Date.now()%period)/period*2*Math.PI
+        const alpha = ( Date.now()%period)/period*2*Math.PI+props.attributes.orbitOffset
         return [orbitRadius*(Math.cos(alpha)), orbitRadius*(Math.sin(alpha))]
     }
 

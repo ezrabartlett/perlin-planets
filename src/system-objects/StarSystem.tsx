@@ -38,7 +38,7 @@ export default function StarSystem(props: StarSystemProps) {
   const planetAttributes: PlanetAttributes[] = []
   const moonAttributes: moonAttributes[] = []
 
-  const planetMassConstant = 1000000
+  const planetMassConstant = Math.pow(10,14)
 
   for (let i = 0; i < planetsNum; i++) {
       planetRefs.push(useRef<Mesh | null>(null))
@@ -51,6 +51,7 @@ export default function StarSystem(props: StarSystemProps) {
         mass: (4/3)*Math.PI*Math.pow(radius,3)*density*planetMassConstant,
         seaLevel: radius,
         baseTemperature: 100,
+        orbitOffset: random.getDouble(0.0, 2*Math.PI),
         humidity: 100,
         moons: random.getInt(minPlanetMoons, maxPlanetMoons),
         orbitRadius: (i+1)*orbitDistance+sunRadius,
@@ -65,6 +66,7 @@ export default function StarSystem(props: StarSystemProps) {
           planet: i,
           hasAtmosphere: random.getInt(1, 10) === 1,
           seed: random.getDouble(1.0, 100000.0).toString(),
+          orbitOffset: random.getDouble(0.0, 2*Math.PI),
           radius: radius,
           seaLevel: radius,
           planetMass: attributes.mass,

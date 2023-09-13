@@ -83,7 +83,6 @@ const generatePlanet = (meshRef: meshRefType, seed: string) => {
         // Generate base terrain
         // **********************
         const noise = noise3D(x, y, z)
-        console.log(noise)
         vertex.multiplyScalar(2)
         // Modulate the vertex position with the noise value
         vertices[i] = vertex.x

@@ -67,7 +67,6 @@ export default function Scene(props: SceneProps) {
     
 
     const setCameraTarget = (newTarget: meshRefObject) => {
-        console.log(window.window.screen.width/window.screen.height)
         if(!useOrbitCamera || newTarget === targetRef) {
             return
         }

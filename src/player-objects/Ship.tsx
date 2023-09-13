@@ -136,7 +136,6 @@ export default function Ship(props: ShipProps) {
             //accelerate(delta)
             //move(delta)
             //dampenVelocity(delta)
-            console.log(maxSpeed)
         }
     }, -1)
 

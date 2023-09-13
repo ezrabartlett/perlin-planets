@@ -13,6 +13,7 @@ export type PlanetAttributes = {
     density: number
     mass: number
     radius: number
+    orbitOffset: number
     rotationSpeed: number
     seaLevel: number
     baseTemperature: number
@@ -28,6 +29,7 @@ export type moonAttributes = {
     hasAtmosphere: boolean
     seed: string
     planetMass: number
+    orbitOffset: number
     radius: number
     rotationSpeed: number
     seaLevel: number
