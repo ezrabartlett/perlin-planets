@@ -8,7 +8,7 @@ import Planet from './Planet';
 import Sun from './Sun';
 
 export type StarSystemProps = {
-    seed: string
+    seed: String
     time: number
     cameraIndex: number
     setCameraTarget?: Function

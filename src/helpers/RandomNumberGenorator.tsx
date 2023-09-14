@@ -1,7 +1,7 @@
 export default class RandomNumberGenerator {
     seed: number
 
-    constructor(seed: string) {
+    constructor(seed: String) {
       this.seed = hashCode(seed);
     }
   
@@ -28,7 +28,7 @@ export default class RandomNumberGenerator {
   }
 
   // Create a simple hash code function for the seed
-const hashCode = function(seed: string) {
+const hashCode = function(seed: String) {
     var hash = 0;
     if (seed.length === 0) return hash;
     for (var i = 0; i < seed.length; i++) {

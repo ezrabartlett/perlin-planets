@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { MeshStandardMaterial, PointLight, Vector3,  Mesh } from 'three';
 import { useState } from 'react';
 export type SunProps = {
-    seed: string
+    seed: String
     position?: Vector3
     setCameraTarget?: Function
     radius: number

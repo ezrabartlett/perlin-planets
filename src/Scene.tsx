@@ -14,13 +14,10 @@ import RandomNumberGenerator from './helpers/RandomNumberGenorator';
 type meshRefObject = React.MutableRefObject<Mesh<BufferGeometry<NormalBufferAttributes>, Material | Material[]> | null>
 
 export type SceneProps = {
-
+    seed: String
 }
 
 export default function Scene(props: SceneProps) {
-
-    let [seed, setSeed] = useState('Ezra Bartlett')
-
 
     const orbitCameraRef = useRef<any>(null)
     const thirdPersonCameraRef = useRef<any>(null)
@@ -28,7 +25,7 @@ export default function Scene(props: SceneProps) {
     const shipRef = useRef<Mesh | null>(null);
     let targetRef = useRef<Mesh | null>(null);
     const { set, scene } = useThree();
-    const orbitCameraPosition = new Vector3(0, 0, 2000000);
+    const orbitCameraPosition = new Vector3(0, 20000000, 70000000);
     let lerping = false;
     let lerpStart = Date.now();
     let offSet = new Vector3(0,0,0);
@@ -52,19 +49,6 @@ export default function Scene(props: SceneProps) {
     const switchCamera = () => {
         setUseOrbitCamera(!useOrbitCamera)
     }
-
-    function randomSeed(length: number) {
-        let result = '';
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const charactersLength = characters.length;
-        let counter = 0;
-        while (counter < length) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-          counter += 1;
-        }
-        return result;
-    }
-    
 
     const setCameraTarget = (newTarget: meshRefObject) => {
         if(!useOrbitCamera || newTarget === targetRef) {
@@ -90,11 +74,6 @@ export default function Scene(props: SceneProps) {
         if( event.code === 'Space') {
             setUseOrbitCamera(!useOrbitCamera)
         }
-        window.addEventListener("keyup", (event) => {
-            if( event.code === 'KeyR') {
-                setSeed(randomSeed(5))
-            }
-        })
     })
 
     useFrame((state, delts) => {
@@ -130,7 +109,7 @@ export default function Scene(props: SceneProps) {
             <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={300000000}/>
             <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
 
-            <StarSystem cameraIndex={cameraIndex} orbitCamera={orbitCamera} thirdPersonCamera={thirdPersonCameraRef} setCameraTarget={setCameraTarget} time={3} seed={seed}/>
+            <StarSystem cameraIndex={cameraIndex} orbitCamera={orbitCamera} thirdPersonCamera={thirdPersonCameraRef} setCameraTarget={setCameraTarget} time={3} seed={props.seed}/>
             <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
             {/* multisampling = { 8 } DEFAULT ANTI-ALIASING SETTING*/}
             {/* Posprocessing effect. Couldn't get it to work but should return later */}
