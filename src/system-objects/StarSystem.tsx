@@ -21,24 +21,24 @@ export default function StarSystem(props: StarSystemProps) {
   const random = new RandomNumberGenerator(props.seed);
   const planetsNum = random.getInt(0, 6)
 
-  const sunRadius = 400000
-  const starMass = 400000*Math.pow(10,25)
+  const sunRadius = 4000000
+  const starMass = 200000000*Math.pow(10,25)
 
   let planetRefs: meshRefType[] = []
 
-  const minPlanetRadius = 30000
-  const maxPlanetRadius = 110000
+  const minPlanetRadius = 300000
+  const maxPlanetRadius = 1100000
 
   const minPlanetMoons = 0
   const maxPlanetMoons = 3
 
-  const orbitDistance = 1000000
-  const moonOrbitDistance = 100000
+  const orbitDistance = 12000000
+  const moonOrbitDistance = 1000000
 
   const planetAttributes: PlanetAttributes[] = []
   const moonAttributes: moonAttributes[] = []
 
-  const planetMassConstant = Math.pow(10,14)
+  const planetMassConstant = Math.pow(10,15)
 
   for (let i = 0; i < planetsNum; i++) {
       planetRefs.push(useRef<Mesh | null>(null))
@@ -86,7 +86,7 @@ export default function StarSystem(props: StarSystemProps) {
   
   return (
     <>
-      <Sun setCameraTarget={props.setCameraTarget} radius={400000} seed={props.seed}/>
+      <Sun setCameraTarget={props.setCameraTarget} radius={sunRadius} seed={props.seed}/>
       {planetAttributes.map( (attributes, index) => {
         return <Planet meshRef={planetRefs[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
       })}

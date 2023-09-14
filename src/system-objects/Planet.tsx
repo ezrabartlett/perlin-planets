@@ -51,6 +51,7 @@ export default function Planet(props: PlanetProps) {
     threeTone.magFilter = NearestFilter
 
     const orbitalPeriod = getOrbitalPeriod(props.attributes.orbitRadius, props.starMass)
+    console.log('planet orbital period')
     console.log(orbitalPeriod)
     let alphaLast = 0
     let timeLast = 0

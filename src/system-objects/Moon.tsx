@@ -52,6 +52,8 @@ export default function Moon(props: MoonProps) {
     threeTone.magFilter = NearestFilter
 
     const orbitalPeriod = getOrbitalPeriod(props.attributes.orbitRadius, props.attributes.planetMass)
+    console.log('moon orbital period')
+    console.log(orbitalPeriod)
     let alphaLast = 0
     let timeLast = 0
     const handleCLicked = (event: any) => {

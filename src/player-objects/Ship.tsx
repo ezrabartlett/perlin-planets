@@ -35,7 +35,7 @@ export default function Ship(props: ShipProps) {
 
     const [accelerating, setAccelerating] = useState(0)
 
-    const [maxSpeed, setMaxSpeed] = useState(10000)
+    const [maxSpeed, setMaxSpeed] = useState(100000)
 
     const handleCLicked = (event: any) => {
         props.switchCamera()
@@ -95,10 +95,12 @@ export default function Ship(props: ShipProps) {
                 setAccelerating(0)
                 break;
             case 'Enter':
-                if(maxSpeed === 10000){
-                    setMaxSpeed(100)
+                if(maxSpeed === 100000){
+                    setMaxSpeed(10000)
+                } else if(maxSpeed === 10000) {
+                    setMaxSpeed(200)                
                 } else {
-                    setMaxSpeed(10000)                
+                    setMaxSpeed(100000)
                 }
                 break;
             default:

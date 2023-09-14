@@ -123,7 +123,7 @@ export default function Scene(props: SceneProps) {
 
     return (
         <>
-            {<ambientLight color={'white'} intensity={.2} />}
+            {<ambientLight color={'white'} intensity={0.2} />}
             <color attach="background" args={["black" as ColorRepresentation]} />
             {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} target={shipRef}/>}
             
