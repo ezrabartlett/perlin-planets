@@ -25,7 +25,7 @@ export default function App() {
   }
 
   const resetScene = () => {
-    setKey(prevKey => prevKey + 1);
+    setKey(prevKey => prevKey===0? 1 : 0);
   };
 
   window.addEventListener("keyup", (event) => {

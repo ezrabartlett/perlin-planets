@@ -78,7 +78,6 @@ export default function Scene(props: SceneProps) {
 
     useFrame((state, delts) => {
         if(targetRef && targetRef.current && orbitCameraRef && orbitCameraRef.current) {
-            orbitCameraPosition.copy(orbitCamera.current.position)
 
             if (lerping) {
                 const targetPos = targetRef.current.position

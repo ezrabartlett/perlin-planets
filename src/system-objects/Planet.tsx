@@ -38,7 +38,7 @@ export default function Planet(props: PlanetProps) {
     const shipAtmosphereRef = useRef<Mesh>(null);
     const [position, setPosition] = useState(new Vector3(props.attributes.orbitRadius, 0, 0))
     const radius = props.attributes.radius
-    const resolution = 100
+    const resolution = 80
     const baseTemperature = 100
     let cameraIndex = props.cameraIndex
 
@@ -136,15 +136,15 @@ export default function Planet(props: PlanetProps) {
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
                 <PlanetGeometry hasAtmosphere={true} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={props.meshRef} colorProfile={props.colorProfile} />
                 <mesh >
-                    <sphereGeometry args={[radius, resolution*4, resolution*2]}/>
+                    <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={'#66a2d1'} gradientMap={threeTone} />
                 </mesh>
                 {<mesh visible={cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
-                    <sphereGeometry args={[radius*1.2, resolution*4, resolution*2]}/>
+                    <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
                 {<mesh visible={cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
-                    <sphereGeometry args={[radius*1.2, resolution*4, resolution*2]}/>
+                    <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
             </mesh>

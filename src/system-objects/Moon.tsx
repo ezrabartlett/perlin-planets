@@ -139,15 +139,15 @@ export default function Moon(props: MoonProps) {
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
                 <PlanetGeometry hasAtmosphere={props.attributes.hasAtmosphere} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={meshRef} colorProfile={props.colorProfile} />
                 <mesh visible={props.attributes.hasAtmosphere}>
-                    <sphereGeometry args={[radius, resolution*4, resolution*2]}/>
+                    <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={'#66a2d1'} gradientMap={threeTone} />
                 </mesh>
                 {<mesh visible={props.attributes.hasAtmosphere && cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
-                    <sphereGeometry args={[radius*1.2, resolution*4, resolution*2]}/>
+                    <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
                 {<mesh visible={props.attributes.hasAtmosphere && cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
-                    <sphereGeometry args={[radius*1.2, resolution*4, resolution*2]}/>
+                    <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
             </mesh>
