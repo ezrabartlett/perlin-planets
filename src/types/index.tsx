@@ -11,6 +11,7 @@ export type atmosphereInfoType = {
 export type PlanetAttributes = {
     seed: string
     density: number
+    hasAtmosphere: boolean
     mass: number
     radius: number
     orbitOffset: number

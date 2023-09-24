@@ -8,6 +8,7 @@ uniform vec3 uSunPos;
 uniform vec3 cameraPos;
 
 uniform vec3 pCenter;
+uniform vec3 uColor;
 uniform float uRadius;
 
 vec2 raySphereIntersection(vec3 center, float radius, vec3 rayOrigin, vec3 rayDir) {
@@ -43,6 +44,6 @@ void main() {
     float dstToAtmosphereNear = hitInfo.x;
     float dstThroughAtmosphere = hitInfo.y;
     
-    gl_FragColor = vec4(vec3(102.0/255.0, 162.0/255.0, 209.0/255.0), 1.0*(dstThroughAtmosphere) / (2.0*uRadius));
+    gl_FragColor = vec4(uColor, 1.0*(dstThroughAtmosphere) / (2.0*uRadius));
 }
 `;

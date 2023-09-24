@@ -40,6 +40,8 @@ export default function Planet(props: PlanetProps) {
     const radius = props.attributes.radius
     const resolution = 80
     const baseTemperature = 100
+    const atmosphereColor = new Color(102/255, 162/255, 209/255)
+
     let cameraIndex = props.cameraIndex
 
     useEffect(() => {
@@ -134,18 +136,18 @@ export default function Planet(props: PlanetProps) {
         <>
             <mesh visible={true} ref={props.meshRef} onClick={handleCLicked} position={position}>
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
-                <PlanetGeometry hasAtmosphere={true} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={props.meshRef} colorProfile={props.colorProfile} />
-                <mesh >
+                <PlanetGeometry hasAtmosphere={props.attributes.hasAtmosphere} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={props.meshRef} colorProfile={props.colorProfile} />
+                { <mesh >
                     <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={'#66a2d1'} gradientMap={threeTone} />
-                </mesh>
+                </mesh>}
                 {<mesh visible={cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
+                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uColor: {value: atmosphereColor}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
                 {<mesh visible={cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
+                    {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
             </mesh>
         </>

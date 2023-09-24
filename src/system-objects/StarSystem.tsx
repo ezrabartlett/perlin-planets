@@ -46,6 +46,7 @@ export default function StarSystem(props: StarSystemProps) {
       const density = random.getDouble(0.8, 1.0)
       let attributes = {
         seed: random.getDouble(1.0, 100000.0).toString(),
+        hasAtmosphere: random.getInt(1, 10) > 1,
         radius: radius,
         density: density,
         mass: (4/3)*Math.PI*Math.pow(radius,3)*density*planetMassConstant,
@@ -86,7 +87,7 @@ export default function StarSystem(props: StarSystemProps) {
   
   return (
     <>
-      <Sun setCameraTarget={props.setCameraTarget} radius={sunRadius} seed={props.seed}/>
+      <Sun setCameraTarget={props.setCameraTarget} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} radius={sunRadius} seed={props.seed}/>
       {planetAttributes.map( (attributes, index) => {
         return <Planet meshRef={planetRefs[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
       })}

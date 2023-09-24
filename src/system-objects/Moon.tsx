@@ -1,6 +1,6 @@
 import React, {useRef, useEffect, RefObject} from 'react';
 import { createRoot } from 'react-dom/client'
-import { MeshStandardMaterial, PointLight, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
+import THREE, { MeshStandardMaterial, PointLight, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
 import { useState } from 'react';
 import PlanetGeometry from '../helpers/PlanetGeometry';
 import TerrainGenerator from '../helpers/TerrainGenerator';
@@ -41,6 +41,8 @@ export default function Moon(props: MoonProps) {
     const radius = props.attributes.radius
     const resolution = 20
     const baseTemperature = 100
+    const atmosphereColor = new Color(102/255, 162/255, 209/255)
+
     let cameraIndex = props.cameraIndex
 
     useEffect(() => {
@@ -144,11 +146,11 @@ export default function Moon(props: MoonProps) {
                 </mesh>
                 {<mesh visible={props.attributes.hasAtmosphere && cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
+                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
                 {<mesh visible={props.attributes.hasAtmosphere && cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
+                    {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
             </mesh>
         </>
