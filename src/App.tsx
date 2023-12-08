@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Scene from './Scene';
 import { Stats } from '@react-three/drei';
 import { Effect } from './helpers/PostProcessingComponent';
+import UserInterface from './UI/UserInterface';
 
 export default function App() {
   const [key, setKey] = useState(0);
@@ -38,6 +39,7 @@ export default function App() {
   return (
     <div id="canvas-container">
       <Box component="div" sx={{ height: '1000px', width: '100%' }}>
+        <UserInterface/>
         <Canvas dpr={window.devicePixelRatio * 2} key={key} gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 10000000}}>
           <Scene seed={seed}/>
           <Stats/>
