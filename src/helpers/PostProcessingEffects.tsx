@@ -2,12 +2,12 @@ import React, { useRef, useEffect } from 'react';
 
 import { Atmospheres } from './Atmosphere';
 import { EffectComposer } from '@react-three/postprocessing';
-import { atmosphereInfoType } from '../types';
+import { AtmosphereInfoType } from '../types';
 import { useFrame } from '@react-three/fiber';
 import { Camera, Vector3 } from 'three';
 
 type PostProcessingEffectsProps = {
-    Atmospheres: atmosphereInfoType[]
+    Atmospheres: AtmosphereInfoType[]
     cameraRef: React.MutableRefObject<Camera>
 }
 

@@ -1,27 +1,47 @@
 import React, {useEffect, useRef} from 'react';
-import { createRoot } from 'react-dom/client'
-import { Color, MeshStandardMaterial, PointLight, Vector3,  Mesh, Camera, BackSide, ShaderMaterial } from 'three';
-import { useState } from 'react';
-import atmosphereFragment from '../shaders/atmosphere/atmosphereFragment';
-import atmosphereVertex from '../shaders/atmosphere/atmosphereVertex';
-import { useFrame } from '@react-three/fiber';
+import { MeshStandardMaterial, Vector3,  Mesh, Camera, ShaderMaterial } from 'three';
+import { StarAttributes, StarClass } from '../types';
 export type SunProps = {
-    seed: String
     position?: Vector3
     setCameraTarget?: Function
     orbitCameraRef: React.MutableRefObject<Camera>
     thirdPersonCameraRef: React.MutableRefObject<Camera>
-    radius: number
     cameraIndex: number
+    attributes: StarAttributes
+}
+
+function hexToRgb(hex: string) {
+    // Remove the hash at the start if it's there
+    hex = hex.substring(1);
+    const bigint = parseInt(hex, 16);
+    const r = 255;
+    const g = (bigint >> 8) & 255;
+    const b = (bigint >> 16) & 255;
+
+    return [r, g, b];
+}
+
+function rgbToHex(color: number[]) {
+    return '#' + (1 << 24 | color[0] << 16 | color[1] << 8 | color[2]).toString(16).slice(1).toUpperCase();
+}
+
+function blendColors(baseColor: number[], tintColor: number[], factor: number) {
+    const r = Math.round(baseColor[0] + (tintColor[0] - baseColor[0]) * factor);
+    const g = Math.round(baseColor[1] + (tintColor[1] - baseColor[1]) * factor);
+    const b = Math.round(baseColor[2] + (tintColor[2] - baseColor[2]) * factor);
+
+    return [r, g, b];
 }
 
 export default function Sun(props: SunProps) {
-    const [intensity, setIntensity] = useState(1.5)
-    const [color, setColor] = useState('white')
+
     const meshRef = useRef<Mesh | null>(null);
     const orbitAtmosphereRef = useRef<Mesh>(null);
     const shipAtmosphereRef = useRef<Mesh>(null);
-    const atmosphereColor = new Color('#ffb703')
+
+    const blendedColor = () => {
+        return rgbToHex(blendColors([255, 255, 255], hexToRgb(props.attributes.lightColor), props.attributes.lightBlendFactor))
+    }
 
     const handleCLicked = (event: any) => {
         if(meshRef && meshRef.current){
@@ -82,9 +102,9 @@ export default function Sun(props: SunProps) {
 
     return (
     <>
-        <mesh ref={meshRef} onClick={handleCLicked} material={new MeshStandardMaterial({ color: 'color', emissive: '#ffdd00' })}>
-            <sphereGeometry args={[props.radius, 30, 30]}/>
-            <pointLight color={color} distance={600000000} intensity={0.8} />
+        <mesh ref={meshRef} onClick={handleCLicked} material={new MeshStandardMaterial({ color: props.attributes.color, emissive: props.attributes.emissiveColor })}>
+            <sphereGeometry args={[props.attributes.radius, 30, 30]}/>
+            <pointLight color={blendedColor()} distance={600000000} intensity={props.attributes.intensity} />
         </mesh>
         {/*<mesh visible={props.cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
             <sphereGeometry args={[props.radius*1.2, 30, 30]}/>
