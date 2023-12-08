@@ -1,6 +1,6 @@
 import { OrbitControls, PerspectiveCamera} from '@react-three/drei';
 import React, { useEffect, useRef, useState } from 'react';
-import { ColorRepresentation, Mesh, BufferGeometry, NormalBufferAttributes, Material, Vector3, Camera, Quaternion} from 'three';
+import { ColorRepresentation, Mesh, BufferGeometry, NormalBufferAttributes, Material, Vector3, Camera, Quaternion, CubeTextureLoader} from 'three';
 import StarSystem from './system-objects/StarSystem';
 import { useFrame, useThree } from '@react-three/fiber';
 import Ship from './player-objects/Ship';
@@ -35,6 +35,24 @@ export default function Scene(props: SceneProps) {
     let [useOrbitCamera, setUseOrbitCamera] = useState(true);
     const lerpTime = 0.3;
     const { size, camera } = useThree(); // Using the useThree hook to get size and camera
+    
+    function SkyBox() {
+        const { scene } = useThree();
+        const loader = new CubeTextureLoader();
+        // The CubeTextureLoader load method takes an array of urls representing all 6 sides of the cube.
+        const texture = loader.load([
+          "/1.png",
+          "/2.png",
+          "/3.png",
+          "/4.png",
+          "/5.png",
+          "/6.png"
+        ]);
+      
+        // Set the scene background property to the resulting texture.
+        scene.background = texture;
+        return null;
+      }
 
     useEffect(() => {
         if(useOrbitCamera) {
@@ -101,6 +119,7 @@ export default function Scene(props: SceneProps) {
 
     return (
         <>
+            {/*<SkyBox/>*/}
             {<ambientLight color={'white'} intensity={0.2} />}
             <color attach="background" args={["black" as ColorRepresentation]} />
             {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} target={shipRef}/>}

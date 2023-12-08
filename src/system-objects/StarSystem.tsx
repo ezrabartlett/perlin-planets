@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client'
 import { Camera, Mesh, MeshStandardMaterial, PointLight } from 'three';
 import RandomNumberGenerator from '../helpers/RandomNumberGenorator';
-import { meshRefType, moonAttributes, PlanetAttributes } from '../types';
+import { meshRefType, MoonAttributes, PlanetAttributes, StarAttributes, StarClass } from '../types';
 import Moon from './Moon';
 import Planet from './Planet';
 import Sun from './Sun';
@@ -18,6 +18,41 @@ export type StarSystemProps = {
 
 export default function StarSystem(props: StarSystemProps) {
 
+  const STAR_CLASSES: StarClass[] = [
+    {
+      name: 'Yellow Dwarf',
+      color: 'white',
+      emissiveColor: '#ffdd00',
+      lightColor: 'white',
+      radiusMin: 3000000,
+      radiusMax: 5000000,
+      intensityMin: 0.7,
+      intensityMax: 0.9,
+      lightBlendFactor: 0,
+    },
+    {
+      name: 'Red Dwarf',
+      color: '#f85e00',
+      emissiveColor: '#f85e00',
+      lightColor: '#f85e00',
+      radiusMin: 4000000,
+      radiusMax: 6000000,
+      intensityMin: 0.5,
+      intensityMax: 0.7,
+      lightBlendFactor: .5,
+    },
+    {
+      name: 'Red Super Giant',
+      color: 'red',
+      emissiveColor: 'red',
+      lightColor: 'red',
+      radiusMin: 7000000,
+      radiusMax: 10000000,
+      intensityMin: 0.5,
+      intensityMax: 0.7,
+      lightBlendFactor: .8,
+    },
+  ]
   const random = new RandomNumberGenerator(props.seed);
   const planetsNum = random.getInt(0, 6)
 
@@ -36,9 +71,22 @@ export default function StarSystem(props: StarSystemProps) {
   const moonOrbitDistance = 1000000
 
   const planetAttributes: PlanetAttributes[] = []
-  const moonAttributes: moonAttributes[] = []
+  const moonAttributes: MoonAttributes[] = []
 
   const planetMassConstant = Math.pow(10,15)
+  
+  const starClassDistribution = [0,0,0,0,0,0,0,1,1,2,2]
+  const starClassIndex = starClassDistribution[random.getInt(0, starClassDistribution.length)]
+  const starClass = STAR_CLASSES[starClassIndex]
+
+  let starAttributes = {
+    radius: random.getInt(starClass.radiusMin, starClass.radiusMax),
+    intensity: random.getDouble(starClass.intensityMin, starClass.intensityMax),
+    color: starClass.color,
+    emissiveColor: starClass.emissiveColor,
+    lightColor: starClass.lightColor,
+    lightBlendFactor: starClass.lightBlendFactor
+  } as StarAttributes
 
   for (let i = 0; i < planetsNum; i++) {
       planetRefs.push(useRef<Mesh | null>(null))
@@ -77,7 +125,7 @@ export default function StarSystem(props: StarSystemProps) {
           orbitRadius: (j+1)*moonOrbitDistance+attributes.radius,
           orbitInclination: random.getInt(0, 35),
           tilt: random.getInt(0, 35)
-        } as moonAttributes
+        } as MoonAttributes
 
         moonAttributes.push(moon)
       }
@@ -87,7 +135,7 @@ export default function StarSystem(props: StarSystemProps) {
   
   return (
     <>
-      <Sun setCameraTarget={props.setCameraTarget} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} radius={sunRadius} seed={props.seed}/>
+      <Sun attributes={starAttributes} setCameraTarget={props.setCameraTarget} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera}/>
       {planetAttributes.map( (attributes, index) => {
         return <Planet meshRef={planetRefs[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
       })}

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import PlanetGeometry from '../helpers/PlanetGeometry';
 import TerrainGenerator from '../helpers/TerrainGenerator';
 import { useFrame, useLoader } from '@react-three/fiber';
-import { meshRefType, moonAttributes } from '../types';
+import { meshRefType, MoonAttributes } from '../types';
 
 // @ts-ignore
 import atmosphereFragment from '../shaders/atmosphere/atmosphereFragment.js'
@@ -16,7 +16,7 @@ import { PlanetAttributes } from '../types';
 //import TerrainGenerator from '../helpers/terrain-generator'
 //import CubeSphere from '../helpers/CubeSphere';
 export type MoonProps = {    
-    attributes: moonAttributes
+    attributes: MoonAttributes
     planet: meshRefType
     colorProfile: number
     cameraIndex: number
