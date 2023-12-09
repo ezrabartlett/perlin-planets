@@ -1,16 +1,16 @@
 {
-  "main.css": "/static/css/main.9dd5fcd6.chunk.css",
-  "main.js": "/static/js/main.647abca9.chunk.js",
-  "main.js.map": "/static/js/main.647abca9.chunk.js.map",
-  "runtime~main.js": "/static/js/runtime~main.296d1d66.js",
-  "runtime~main.js.map": "/static/js/runtime~main.296d1d66.js.map",
-  "static/js/2.77b62cac.chunk.js": "/static/js/2.77b62cac.chunk.js",
-  "static/js/2.77b62cac.chunk.js.map": "/static/js/2.77b62cac.chunk.js.map",
-  "static/js/3.0c0dc788.chunk.js": "/static/js/3.0c0dc788.chunk.js",
-  "static/js/3.0c0dc788.chunk.js.map": "/static/js/3.0c0dc788.chunk.js.map",
-  "index.html": "/index.html",
-  "precache-manifest.64f2d4fc8759f865d9b7d6034df33d65.js": "/precache-manifest.64f2d4fc8759f865d9b7d6034df33d65.js",
-  "service-worker.js": "/service-worker.js",
-  "static/css/main.9dd5fcd6.chunk.css.map": "/static/css/main.9dd5fcd6.chunk.css.map",
-  "static/media/threeTone.jpg": "/static/media/threeTone.f8722875.jpg"
+  "files": {
+    "main.css": "/static/css/main.431cf63b.css",
+    "main.js": "/static/js/main.770a973c.js",
+    "static/js/787.6e821cc4.chunk.js": "/static/js/787.6e821cc4.chunk.js",
+    "static/media/threeTone.jpg": "/static/media/threeTone.f981ce1c4519d9e255f5.jpg",
+    "index.html": "/index.html",
+    "main.431cf63b.css.map": "/static/css/main.431cf63b.css.map",
+    "main.770a973c.js.map": "/static/js/main.770a973c.js.map",
+    "787.6e821cc4.chunk.js.map": "/static/js/787.6e821cc4.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.431cf63b.css",
+    "static/js/main.770a973c.js"
+  ]
 }
