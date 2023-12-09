@@ -14,7 +14,8 @@ import RandomNumberGenerator from './helpers/RandomNumberGenorator';
 type meshRefObject = React.MutableRefObject<Mesh<BufferGeometry<NormalBufferAttributes>, Material | Material[]> | null>
 
 export type SceneProps = {
-    seed: String
+    seed: String,
+    useOrbitCamera: boolean
 }
 
 export default function Scene(props: SceneProps) {
@@ -32,7 +33,6 @@ export default function Scene(props: SceneProps) {
     let startingCameraTarget = new Vector3(0,0,0);
     let startingCameraPos = new Vector3(0,0,0);
     let [cameraIndex, setCameraIndex] = useState(1)
-    let [useOrbitCamera, setUseOrbitCamera] = useState(true);
     const lerpTime = 0.3;
     const { size, camera } = useThree(); // Using the useThree hook to get size and camera
     
@@ -55,21 +55,21 @@ export default function Scene(props: SceneProps) {
       }
 
     useEffect(() => {
-        if(useOrbitCamera) {
+        if(props.useOrbitCamera) {
             set({ camera: orbitCamera.current });
             setCameraIndex(1)
         } else {
             setCameraIndex(0)
             set({ camera: thirdPersonCameraRef.current });
         }
-    }, [useOrbitCamera])
+    }, [props.useOrbitCamera])
 
     const switchCamera = () => {
         setUseOrbitCamera(!useOrbitCamera)
     }
 
     const setCameraTarget = (newTarget: meshRefObject) => {
-        if(!useOrbitCamera || newTarget === targetRef) {
+        if(!props.useOrbitCamera || newTarget === targetRef) {
             return
         }
 
