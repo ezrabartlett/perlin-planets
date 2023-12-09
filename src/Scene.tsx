@@ -64,10 +64,6 @@ export default function Scene(props: SceneProps) {
         }
     }, [props.useOrbitCamera])
 
-    const switchCamera = () => {
-        setUseOrbitCamera(!useOrbitCamera)
-    }
-
     const setCameraTarget = (newTarget: meshRefObject) => {
         if(!props.useOrbitCamera || newTarget === targetRef) {
             return
@@ -87,12 +83,6 @@ export default function Scene(props: SceneProps) {
         
         targetRef = newTarget
     }
-
-    window.addEventListener("keyup", (event) => {
-        if( event.code === 'Space') {
-            setUseOrbitCamera(!useOrbitCamera)
-        }
-    })
 
     useFrame((state, delts) => {
         if(targetRef && targetRef.current && orbitCameraRef && orbitCameraRef.current) {
@@ -128,7 +118,7 @@ export default function Scene(props: SceneProps) {
             <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
 
             <StarSystem cameraIndex={cameraIndex} orbitCamera={orbitCamera} thirdPersonCamera={thirdPersonCameraRef} setCameraTarget={setCameraTarget} time={3} seed={props.seed}/>
-            <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} switchCamera={switchCamera} />
+            <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} />
             {/* multisampling = { 8 } DEFAULT ANTI-ALIASING SETTING*/}
             {/* Posprocessing effect. Couldn't get it to work but should return later */}
             {/* <PostProcessingEffects Atmospheres={[]} cameraRef={orbitCamera} />*/}
