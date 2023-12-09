@@ -59,8 +59,6 @@ export default function StarSystem(props: StarSystemProps) {
   const sunRadius = 4000000
   const starMass = 200000000*Math.pow(10,25)
 
-  let planetRefs: meshRefType[] = []
-
   const minPlanetRadius = 300000
   const maxPlanetRadius = 1100000
 
@@ -88,8 +86,9 @@ export default function StarSystem(props: StarSystemProps) {
     lightBlendFactor: starClass.lightBlendFactor
   } as StarAttributes
 
+  let totalPlanets = planetsNum;
+
   for (let i = 0; i < planetsNum; i++) {
-      planetRefs.push(useRef<Mesh | null>(null))
       const radius = random.getInt(minPlanetRadius, maxPlanetRadius)
       const density = random.getDouble(0.8, 1.0)
       let attributes = {
@@ -107,6 +106,8 @@ export default function StarSystem(props: StarSystemProps) {
         orbitInclination: random.getInt(0, 35),
         tilt: random.getInt(0, 35)
       } as PlanetAttributes
+
+      totalPlanets+=attributes.moons;
 
       for (let j = 0; j <= attributes.moons; j++) {
         const radius = attributes.radius*random.getDouble(.1, .5)
@@ -132,15 +133,17 @@ export default function StarSystem(props: StarSystemProps) {
 
       planetAttributes.push(attributes)
   }
-  
+
+  const planetRefs = useRef(Array.from({length: totalPlanets}, a => React.createRef<Mesh>()));
+
   return (
     <>
       <Sun attributes={starAttributes} setCameraTarget={props.setCameraTarget} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera}/>
       {planetAttributes.map( (attributes, index) => {
-        return <Planet meshRef={planetRefs[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
+        return <Planet meshRef={planetRefs.current[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
       })}
       {moonAttributes.map( (attributes, index) => {
-        return <Moon planet={planetRefs[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
+        return <Moon planet={planetRefs.current[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
       })}
     </>
   );
