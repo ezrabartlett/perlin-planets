@@ -9,7 +9,6 @@ export type ShipProps = {
     startingPosition: Vector3
     startingAngle: Quaternion
     meshRef: meshRefType
-    switchCamera: Function
 }
 
 export default function Ship(props: ShipProps) {
@@ -36,10 +35,6 @@ export default function Ship(props: ShipProps) {
     const [accelerating, setAccelerating] = useState(0)
 
     const [maxSpeed, setMaxSpeed] = useState(100000)
-
-    const handleCLicked = (event: any) => {
-        props.switchCamera()
-    }
 
     window.addEventListener('keydown', (e) => {
         //window.alert(e.code)
@@ -143,7 +138,7 @@ export default function Ship(props: ShipProps) {
 
     return (
         <>
-            <mesh ref={meshRef} onClick={handleCLicked} position={props.startingPosition}>
+            <mesh ref={meshRef} position={props.startingPosition}>
                 <mesh>
                     <coneGeometry args={[0.8, 0.3, 30, 8]}/>
                     <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />
