@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.431cf63b.css",
-    "main.js": "/static/js/main.770a973c.js",
+    "main.js": "/static/js/main.c7ae42de.js",
     "static/js/787.6e821cc4.chunk.js": "/static/js/787.6e821cc4.chunk.js",
     "static/media/threeTone.jpg": "/static/media/threeTone.f981ce1c4519d9e255f5.jpg",
     "index.html": "/index.html",
     "main.431cf63b.css.map": "/static/css/main.431cf63b.css.map",
-    "main.770a973c.js.map": "/static/js/main.770a973c.js.map",
+    "main.c7ae42de.js.map": "/static/js/main.c7ae42de.js.map",
     "787.6e821cc4.chunk.js.map": "/static/js/787.6e821cc4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.431cf63b.css",
-    "static/js/main.770a973c.js"
+    "static/js/main.c7ae42de.js"
   ]
 }
