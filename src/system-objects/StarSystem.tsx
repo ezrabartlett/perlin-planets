@@ -2,10 +2,11 @@ import React, { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client'
 import { Camera, Mesh, MeshStandardMaterial, PointLight } from 'three';
 import RandomNumberGenerator from '../helpers/RandomNumberGenorator';
-import { meshRefType, MoonAttributes, PlanetAttributes, StarAttributes, StarClass } from '../types';
+import { GasGiantAttributes, meshRefType, MoonAttributes, PlanetAttributes, StarAttributes, StarClass } from '../types';
 import Moon from './Moon';
 import Planet from './Planet';
 import Sun from './Sun';
+import GasGiant from './GasGiant';
 
 export type StarSystemProps = {
     seed: String
@@ -54,7 +55,9 @@ export default function StarSystem(props: StarSystemProps) {
     },
   ]
   const random = new RandomNumberGenerator(props.seed);
-  const planetsNum = random.getInt(0, 6)
+  const innerPlanets = random.getInt(0, 3)
+  const gasGiants = random.getInt(0, 3)
+  const outerPlanets = random.getInt(0, 3)
 
   const sunRadius = 4000000
   const starMass = 200000000*Math.pow(10,25)
@@ -62,15 +65,26 @@ export default function StarSystem(props: StarSystemProps) {
   const minPlanetRadius = 300000
   const maxPlanetRadius = 1100000
 
-  const minPlanetMoons = 0
-  const maxPlanetMoons = 3
+  const minGasGiantRadius = 1500000
+  const maxGasGiantRadius = 2500000
+
+  const minMoonRadius = 30000
+  const maxMoonRadius = 600000
+
+  const minInnerPlanetMoons = 0
+  const maxInnerPlanetMoons = 2
+
+  const minGasGiantMoons = 0
+  const maxGasGiantMoons = 4
 
   const orbitDistance = 12000000
   const moonOrbitDistance = 1000000
 
-  const planetAttributes: PlanetAttributes[] = []
-  const moonAttributes: MoonAttributes[] = []
-
+  const innerPlanetAttributes: PlanetAttributes[] = []
+  const innerMoonAttributes: MoonAttributes[] = []
+  const gasGiantAttributes: GasGiantAttributes[] = []
+  const gasGiantMoonsAttributes: MoonAttributes[] = []
+  const gasGiantColors = ['#66a2d1','#9d4edd','#40916c','#1f271b','#023e8a']
   const planetMassConstant = Math.pow(10,15)
   
   const starClassDistribution = [0,0,0,0,0,0,0,1,1,2,2]
@@ -86,9 +100,9 @@ export default function StarSystem(props: StarSystemProps) {
     lightBlendFactor: starClass.lightBlendFactor
   } as StarAttributes
 
-  let totalPlanets = planetsNum;
+  let totalPlanets = innerPlanets+gasGiants;
 
-  for (let i = 0; i < planetsNum; i++) {
+  for (let i = 0; i < innerPlanets; i++) {
       const radius = random.getInt(minPlanetRadius, maxPlanetRadius)
       const density = random.getDouble(0.8, 1.0)
       let attributes = {
@@ -101,7 +115,7 @@ export default function StarSystem(props: StarSystemProps) {
         baseTemperature: 100,
         orbitOffset: random.getDouble(0.0, 2*Math.PI),
         humidity: 100,
-        moons: random.getInt(minPlanetMoons, maxPlanetMoons),
+        moons: random.getInt(minInnerPlanetMoons, maxInnerPlanetMoons),
         orbitRadius: (i+1)*orbitDistance+sunRadius,
         orbitInclination: random.getInt(0, 35),
         tilt: random.getInt(0, 35)
@@ -128,22 +142,76 @@ export default function StarSystem(props: StarSystemProps) {
           tilt: random.getInt(0, 35)
         } as MoonAttributes
 
-        moonAttributes.push(moon)
+        innerMoonAttributes.push(moon)
       }
 
-      planetAttributes.push(attributes)
+      innerPlanetAttributes.push(attributes)
   }
 
-  const planetRefs = useRef(Array.from({length: totalPlanets}, a => React.createRef<Mesh>()));
+  for (let i = 0; i < gasGiants; i++) {
+    const radius = random.getInt(minGasGiantRadius, maxGasGiantRadius)
+    const density = random.getDouble(0.6, 0.8)
+    let attributes = {
+      seed: random.getDouble(1.0, 100000.0).toString(),
+      radius: radius,
+      density: density,
+      mass: (4/3)*Math.PI*Math.pow(radius,3)*density*planetMassConstant,
+      color: gasGiantColors[random.getInt(0,gasGiantColors.length)],
+      baseTemperature: 100,
+      orbitOffset: random.getDouble(0.0, 2*Math.PI),
+      moons: random.getInt(minGasGiantMoons, maxGasGiantMoons),
+      orbitRadius: (innerPlanets+i+1)*orbitDistance+sunRadius,
+      orbitInclination: random.getInt(0, 35),
+      tilt: random.getInt(0, 35)
+    } as GasGiantAttributes
+
+    totalPlanets+=attributes.moons;
+
+    for (let j = 0; j <= attributes.moons; j++) {
+      const radius = random.getInt(minMoonRadius, maxMoonRadius)
+
+      let moon = {
+        planet: i,
+        hasAtmosphere: random.getInt(1, 10) === 1,
+        seed: random.getDouble(1.0, 100000.0).toString(),
+        orbitOffset: random.getDouble(0.0, 2*Math.PI),
+        radius: radius,
+        seaLevel: radius,
+        planetMass: attributes.mass,
+        baseTemperature: 100,
+        humidity: 100,
+        moons: 0,
+        orbitRadius: (j+1)*moonOrbitDistance+attributes.radius,
+        orbitInclination: random.getInt(0, 35),
+        tilt: random.getInt(0, 35)
+      } as MoonAttributes
+
+      gasGiantMoonsAttributes.push(moon)
+    }
+
+    gasGiantAttributes.push(attributes)
+}
+
+  const innerPlanetsRefs = useRef(Array.from({length: innerPlanets}, a => React.createRef<Mesh>()));
+  const gasGiantRefs = useRef(Array.from({length: gasGiants}, a => React.createRef<Mesh>()));
+
 
   return (
     <>
       <Sun attributes={starAttributes} setCameraTarget={props.setCameraTarget} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera}/>
-      {planetAttributes.map( (attributes, index) => {
-        return <Planet meshRef={planetRefs.current[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
+      
+      {innerPlanetAttributes.map( (attributes, index) => {
+        return <Planet meshRef={innerPlanetsRefs.current[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
       })}
-      {moonAttributes.map( (attributes, index) => {
-        return <Moon planet={planetRefs.current[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
+      {innerMoonAttributes.map( (attributes, index) => {
+        return <Moon planet={innerPlanetsRefs.current[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
+      })}
+
+      {gasGiantAttributes.map( (attributes, index) => {
+        return <GasGiant meshRef={gasGiantRefs.current[index]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} starMass={starMass} attributes={attributes}/>
+      })}
+      {gasGiantMoonsAttributes.map( (attributes, index) => {
+        return <Moon planet={gasGiantRefs.current[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
       })}
     </>
   );
