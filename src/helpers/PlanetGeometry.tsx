@@ -54,7 +54,6 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
   useEffect(() => {
     let geometry = meshRef.current!.geometry as BoxGeometry;
     let material = meshRef.current!.material as ShaderMaterial;
-    geometry.computeBoundsTree();
 
     for(let i = 0; i < geometry.attributes.position.count; i++){
       let x = geometry.attributes.position.getX(i)
@@ -81,6 +80,7 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
     material.uniforms.time = {value: 1.0}
 
     geometry.computeVertexNormals()
+    geometry.computeBoundsTree();
   }, []);
 
   return (
