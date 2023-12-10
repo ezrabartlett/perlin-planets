@@ -35,6 +35,21 @@ export type PlanetAttributes = {
     tilt: number 
 }
 
+export type GasGiantAttributes = {
+    seed: string
+    density: number
+    color: string
+    mass: number
+    radius: number
+    orbitOffset: number
+    rotationSpeed: number
+    baseTemperature: number
+    moons: number
+    orbitRadius: number
+    orbitInclination: number
+    tilt: number 
+}
+
 export type StarClass = {
     name: string
     color: string
