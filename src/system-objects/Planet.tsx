@@ -1,10 +1,11 @@
 import React, {useRef, useEffect, RefObject} from 'react';
 import { createRoot } from 'react-dom/client'
-import { MeshStandardMaterial, PointLight, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
+import THREE, { MeshStandardMaterial, PointLight, Raycaster, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
 import { useState } from 'react';
 import PlanetGeometry from '../helpers/PlanetGeometry';
 import TerrainGenerator from '../helpers/TerrainGenerator';
 import { useFrame, useLoader } from '@react-three/fiber';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 // @ts-ignore
 import atmosphereFragment from '../shaders/atmosphere/atmosphereFragment.js'
@@ -35,12 +36,15 @@ export default function Planet(props: PlanetProps) {
     const material = new MeshToonMaterial(); // MeshStandardMaterial({color: 'blue' })
     const orbitRadius = props.attributes.orbitRadius;
     const orbitAtmosphereRef = useRef<Mesh>(null);
+
     const shipAtmosphereRef = useRef<Mesh>(null);
-    const [position, setPosition] = useState(new Vector3(props.attributes.orbitRadius, 0, 0))
+
     const radius = props.attributes.radius
     const resolution = 80
     const baseTemperature = 100
     const atmosphereColor = new Color(102/255, 162/255, 209/255)
+    const shipRayCaster = new Raycaster()
+    shipRayCaster.firstHitOnly = true;
 
     let cameraIndex = props.cameraIndex
 
@@ -92,6 +96,7 @@ export default function Planet(props: PlanetProps) {
 
     const updateShipAtmpshereUniforms = () => {
         const material = shipAtmosphereRef.current!.material as ShaderMaterial;
+
         if (material && material.uniforms) {
             if(cameraIndex === 1) {
                 if (props.orbitCameraRef && props.orbitCameraRef.current) {
@@ -108,9 +113,25 @@ export default function Planet(props: PlanetProps) {
         }
     }
 
+    const rayDir = new Vector3()
+    let rayHitPosition = new Vector3(props.attributes.orbitRadius, 0, 0);
+    const rayIndicatorRef = useRef<Mesh>(null);
+
     useFrame((state, delta) => {
         if (props.meshRef.current) {// && props.colorProfile===0) {
             //meshRef.current.rotation.y += 0.01*delta;
+
+            // Cast ray and set tracking mesh to correct position
+            rayDir.subVectors(props.meshRef.current.position, props.thirdPersonCameraRef.current.position)
+            shipRayCaster.set(props.thirdPersonCameraRef.current.position, rayDir)
+            const intersection = shipRayCaster.intersectObjects( [ props.meshRef.current ] )[0];
+            intersection && intersection.point && (rayHitPosition = intersection.point);
+
+
+            console.log('intersection')
+            if(intersection && intersection.point && rayIndicatorRef && rayIndicatorRef.current){
+                rayIndicatorRef.current.position.set(intersection.point.x, intersection.point.y, intersection.point.z);
+            }
 
             const pos = getPlanetPosition(delta);
         
@@ -134,7 +155,11 @@ export default function Planet(props: PlanetProps) {
 
     return (
         <>
-            <mesh visible={true} ref={props.meshRef} onClick={handleCLicked} position={position}>
+            <mesh position={rayHitPosition} ref={rayIndicatorRef}>
+                <sphereGeometry args={[1000, 5, 5]}/>
+                <meshToonMaterial fog={true} color={'red'} gradientMap={threeTone} />
+            </mesh>
+            <mesh visible={true} ref={props.meshRef} onClick={handleCLicked}>
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
                 <PlanetGeometry hasAtmosphere={props.attributes.hasAtmosphere} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={props.meshRef} colorProfile={props.colorProfile} />
                 { <mesh >

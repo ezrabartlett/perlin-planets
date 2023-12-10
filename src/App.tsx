@@ -3,10 +3,16 @@ import './output.css';
 import { createRoot } from 'react-dom/client'
 import { Canvas } from '@react-three/fiber';
 import Box from '@mui/material/Box';
+import * as THREE from 'three'
 import Scene from './Scene';
 import { Stats } from '@react-three/drei';
 import { Effect } from './helpers/PostProcessingComponent';
 import UserInterface from './UI/UserInterface';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
+THREE.Mesh.prototype.raycast = acceleratedRaycast
 
 export default function App() {
   const [key, setKey] = useState(0);

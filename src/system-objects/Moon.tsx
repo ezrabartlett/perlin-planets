@@ -1,6 +1,6 @@
 import React, {useRef, useEffect, RefObject} from 'react';
 import { createRoot } from 'react-dom/client'
-import THREE, { MeshStandardMaterial, PointLight, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
+import THREE, { MeshStandardMaterial, PointLight, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide, Raycaster} from 'three';
 import { useState } from 'react';
 import PlanetGeometry from '../helpers/PlanetGeometry';
 import TerrainGenerator from '../helpers/TerrainGenerator';
@@ -109,9 +109,28 @@ export default function Moon(props: MoonProps) {
         }
     }
 
+    const shipRayCaster = new Raycaster()
+    shipRayCaster.firstHitOnly = true;
+
+    const rayDir = new Vector3()
+    let rayHitPosition = new Vector3(props.attributes.orbitRadius, 0, 0);
+    const rayIndicatorRef = useRef<Mesh>(null);
+
     useFrame((state, delta) => {
         if (meshRef.current && props.planet) {// && props.colorProfile===0) {
             //meshRef.current.rotation.y += 0.01*delta;
+
+            // Cast ray and set tracking mesh to correct position
+            rayDir.subVectors(meshRef.current.position, props.thirdPersonCameraRef.current.position)
+            shipRayCaster.set(props.thirdPersonCameraRef.current.position, rayDir)
+            const intersection = shipRayCaster.intersectObjects( [ meshRef.current ] )[0];
+            intersection && intersection.point && (rayHitPosition = intersection.point);
+
+
+            console.log('intersection')
+            if(intersection && intersection.point && rayIndicatorRef && rayIndicatorRef.current){
+                rayIndicatorRef.current.position.set(intersection.point.x, intersection.point.y, intersection.point.z);
+            }
 
             const pos = getMoonPosition(delta);
             
@@ -137,6 +156,10 @@ export default function Moon(props: MoonProps) {
 
     return (
         <>
+            <mesh position={rayHitPosition} ref={rayIndicatorRef}>
+                <sphereGeometry args={[1000, 5, 5]}/>
+                <meshToonMaterial fog={true} color={'red'} gradientMap={threeTone} />
+            </mesh>
             <mesh visible={true} ref={meshRef} onClick={handleCLicked} position={position}>
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
                 <PlanetGeometry hasAtmosphere={props.attributes.hasAtmosphere} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={meshRef} colorProfile={props.colorProfile} />
