@@ -1,17 +1,22 @@
 import React, {useRef, useEffect, RefObject} from 'react';
 import { createRoot } from 'react-dom/client'
-import THREE, { MeshStandardMaterial, PointLight, Raycaster, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
+import * as THREE from 'three';
+import three, { PointLight, Raycaster, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
+//import * as three from 'three'
 import { useState } from 'react';
 import PlanetGeometry from '../helpers/PlanetGeometry';
 import TerrainGenerator from '../helpers/TerrainGenerator';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
-
 // @ts-ignore
 import atmosphereFragment from '../shaders/atmosphere/atmosphereFragment.js'
 // @ts-ignore
 import atmosphereVertex from '../shaders/atmosphere/atmosphereVertex.js'
 import { meshRefType, PlanetAttributes } from '../types';
+
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
+THREE.Mesh.prototype.raycast = acceleratedRaycast
 
 //import TerrainGenerator from '../helpers/terrain-generator'
 //import CubeSphere from '../helpers/CubeSphere';
@@ -26,6 +31,10 @@ export type PlanetProps = {
     setCameraTarget?: Function
 }
 
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
+THREE.Mesh.prototype.raycast = acceleratedRaycast
+
 const getOrbitalPeriod = (orbitRadius: number, starMass: number) => {
     const gravitationalConstant = 6.674*Math.pow(10, -11) // in N*m^2*kg^-2
     const semiMajorAxis = orbitRadius*2 // in kg
@@ -36,14 +45,15 @@ export default function Planet(props: PlanetProps) {
     const material = new MeshToonMaterial(); // MeshStandardMaterial({color: 'blue' })
     const orbitRadius = props.attributes.orbitRadius;
     const orbitAtmosphereRef = useRef<Mesh>(null);
-
+    
     const shipAtmosphereRef = useRef<Mesh>(null);
+    const surfaceMeshRef = useRef<Mesh>(null);
 
     const radius = props.attributes.radius
     const resolution = 80
     const baseTemperature = 100
     const atmosphereColor = new Color(102/255, 162/255, 209/255)
-    const shipRayCaster = new Raycaster()
+    const shipRayCaster = new Raycaster(undefined, undefined, 0, 10000)
     shipRayCaster.firstHitOnly = true;
 
     let cameraIndex = props.cameraIndex
@@ -156,12 +166,12 @@ export default function Planet(props: PlanetProps) {
     return (
         <>
             <mesh position={rayHitPosition} ref={rayIndicatorRef}>
-                <sphereGeometry args={[1000, 5, 5]}/>
+                <sphereGeometry args={[1000, 2, 2]}/>
                 <meshToonMaterial fog={true} color={'red'} gradientMap={threeTone} />
             </mesh>
             <mesh visible={true} ref={props.meshRef} onClick={handleCLicked}>
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
-                <PlanetGeometry hasAtmosphere={props.attributes.hasAtmosphere} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={props.meshRef} colorProfile={props.colorProfile} />
+                <PlanetGeometry hasAtmosphere={props.attributes.hasAtmosphere} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={surfaceMeshRef} colorProfile={props.colorProfile} />
                 { <mesh >
                     <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={'#66a2d1'} gradientMap={threeTone} />
