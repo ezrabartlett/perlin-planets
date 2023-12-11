@@ -6,7 +6,8 @@ import { meshRefType } from '../types';
 
 export type ThirdPersonCameraProps = {
     cameraRef: React.MutableRefObject<Camera>
-    target: meshRefType
+    targets: meshRefType[]
+    cameraIndex: number
 }
 
 export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
@@ -14,30 +15,33 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
    const camera = props.cameraRef;
    const currentPosition = new Vector3();
    const currentLookAt = new Vector3();
-   const target = props.target
+   const targets = props.targets
 
    const calculateIdealOffset = () => {
         const idealOffset = new Vector3(0, 0.5, -3);
-        if (target.current) {
-            idealOffset.applyQuaternion(target.current.quaternion)
-            idealOffset.add(target.current.position)
+        const target = targets[props.cameraIndex].current
+        if (target) {
+            idealOffset.applyQuaternion(target.quaternion)
+            idealOffset.add(target.position)
         }
         return idealOffset;
     }     
     
     const calculateIdealLookAt = () => {
         const idealLookAt = new Vector3(0, .4, 1.3);
-        if (target.current) {
-            idealLookAt.applyQuaternion(target.current.quaternion)
-            idealLookAt.add(target.current.position)
+        const target = targets[props.cameraIndex].current
+        if (target) {
+            idealLookAt.applyQuaternion(target.quaternion)
+            idealLookAt.add(target.position)
         }
         return idealLookAt;
     }      
 
     const calculateIdealRotation = () => {
         const idealRotation = new Euler();
-        if (target.current) {
-            idealRotation.copy(target.current.rotation)
+        const target = targets[props.cameraIndex].current
+        if (target) {
+            idealRotation.copy(target.rotation)
         }
         return idealRotation;
     }
@@ -51,7 +55,7 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
 
         camera.current.position.copy(currentPosition)
         //@ts-ignore
-        camera.current.rotation.copy(target.current.rotation)
+        targets[props.cameraIndex].current && camera.current.rotation.copy(targets[props.cameraIndex].current.rotation)
         camera.current.rotateY(Math.PI)
         //const up = new Vector3(0, 1, 0);
 

@@ -80,7 +80,7 @@ export default function GasGiant(props: GasGiantProps) {
     const updateOrbitAtmpshereUniforms = () => {
         const material = orbitAtmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
-            if(props.cameraIndex === 1) {
+            if(props.cameraIndex === 0) {
                 if (props.orbitCameraRef && props.orbitCameraRef.current) {
                     material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
                 }
@@ -98,7 +98,7 @@ export default function GasGiant(props: GasGiantProps) {
     const updateShipAtmpshereUniforms = () => {
         const material = shipAtmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
-            if(cameraIndex === 1) {
+            if(cameraIndex === 0) {
                 if (props.orbitCameraRef && props.orbitCameraRef.current) {
                     material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
                 }
@@ -144,11 +144,11 @@ export default function GasGiant(props: GasGiantProps) {
                     <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={props.attributes.color} gradientMap={threeTone} />
                 </mesh>}
-                {<mesh visible={cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
+                {<mesh visible={cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.06, 30, 30]}/>
                     {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uColor: {value: atmosphereColor}, uRadius: {value: props.attributes.radius*1.06}}} />}
                 </mesh>}
-                {<mesh visible={cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
+                {<mesh visible={cameraIndex!==0} ref={orbitAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.06, 30, 30]}/>
                     {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.06}}} />}
                 </mesh>}

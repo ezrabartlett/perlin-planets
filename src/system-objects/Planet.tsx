@@ -89,14 +89,8 @@ export default function Planet(props: PlanetProps) {
     const updateOrbitAtmpshereUniforms = () => {
         const material = orbitAtmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
-            if(props.cameraIndex === 1) {
-                if (props.orbitCameraRef && props.orbitCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
-                }
-            } else {
-                if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
-                }
+            if (props.orbitCameraRef && props.orbitCameraRef.current) {
+                material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
             }
             props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)
         } else {
@@ -108,14 +102,8 @@ export default function Planet(props: PlanetProps) {
         const material = shipAtmosphereRef.current!.material as ShaderMaterial;
 
         if (material && material.uniforms) {
-            if(cameraIndex === 1) {
-                if (props.orbitCameraRef && props.orbitCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
-                }
-            } else {
-                if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
-                }
+            if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
+                material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
             }
             props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)
         } else {
@@ -152,7 +140,7 @@ export default function Planet(props: PlanetProps) {
             // meshRef.current.position.x += 1
         }
 
-        if(cameraIndex) {
+        if(cameraIndex===0) {
             updateOrbitAtmpshereUniforms();
         } else {
             updateShipAtmpshereUniforms();
@@ -176,11 +164,11 @@ export default function Planet(props: PlanetProps) {
                     <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={'#66a2d1'} gradientMap={threeTone} />
                 </mesh>}
-                {<mesh visible={cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
+                {<mesh visible={cameraIndex===0} ref={orbitAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uColor: {value: atmosphereColor}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
-                {<mesh visible={cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
+                {<mesh visible={cameraIndex!==0} ref={shipAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}

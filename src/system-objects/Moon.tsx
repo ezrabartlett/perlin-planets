@@ -76,7 +76,7 @@ export default function Moon(props: MoonProps) {
     const updateOrbitAtmpshereUniforms = () => {
         const material = orbitAtmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
-            if(props.cameraIndex === 1) {
+            if(props.cameraIndex === 0) {
                 if (props.orbitCameraRef && props.orbitCameraRef.current) {
                     material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
                 }
@@ -94,7 +94,7 @@ export default function Moon(props: MoonProps) {
     const updateShipAtmpshereUniforms = () => {
         const material = shipAtmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
-            if(cameraIndex === 1) {
+            if(cameraIndex === 0) {
                 if (props.orbitCameraRef && props.orbitCameraRef.current) {
                     material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
                 }
@@ -143,7 +143,7 @@ export default function Moon(props: MoonProps) {
             // meshRef.current.position.x += 1
         }
         
-        if(cameraIndex) {
+        if(cameraIndex===0) {
             updateOrbitAtmpshereUniforms();
         } else {
             updateShipAtmpshereUniforms();
@@ -167,11 +167,11 @@ export default function Moon(props: MoonProps) {
                     <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={'#66a2d1'} gradientMap={threeTone} />
                 </mesh>
-                {<mesh visible={props.attributes.hasAtmosphere && cameraIndex===1} ref={orbitAtmosphereRef} renderOrder={-10}>
+                {<mesh visible={props.attributes.hasAtmosphere && cameraIndex===0} ref={orbitAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}
-                {<mesh visible={props.attributes.hasAtmosphere && cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
+                {<mesh visible={props.attributes.hasAtmosphere && cameraIndex!==0} ref={shipAtmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
                     {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
                 </mesh>}

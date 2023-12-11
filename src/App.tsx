@@ -18,6 +18,7 @@ export default function App() {
   const [key, setKey] = useState(0);
   const [seed, setSeed] = useState('Ezra Bartlett');
   const [useOrbitCamera, setUseOrbitCamera] = useState(true);
+  const [cameraIndex, setCameraIndex] = useState(0)
 
   const regenerate = (seed: string) => {
     setSeed(seed)
@@ -48,9 +49,9 @@ export default function App() {
   return (
     <div id="canvas-container">
       <Box component="div" className='h-screen w-full'>
-        <UserInterface regenerate={regenerate} changeView={changeView} orbitCamera={useOrbitCamera}/>
+        <UserInterface regenerate={regenerate} cameraIndex={cameraIndex} setCameraIndex={setCameraIndex}/>
         <Canvas dpr={window.devicePixelRatio * 2} key={key} gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 10000000}}>
-          <Scene seed={seed} useOrbitCamera={useOrbitCamera}/>
+          <Scene seed={seed} cameraIndex={cameraIndex}/>
           <Stats/>
           {/*<Effect />*/}
         </Canvas>

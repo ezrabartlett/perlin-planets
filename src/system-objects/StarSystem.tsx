@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client'
-import { Camera, Mesh, MeshStandardMaterial, PointLight } from 'three';
+import { Camera, Mesh, MeshStandardMaterial, PointLight, Quaternion, Vector3 } from 'three';
 import RandomNumberGenerator from '../helpers/RandomNumberGenorator';
 import { GasGiantAttributes, meshRefType, MoonAttributes, PlanetAttributes, StarAttributes, StarClass } from '../types';
 import Moon from './Moon';
 import Planet from './Planet';
 import Sun from './Sun';
 import GasGiant from './GasGiant';
+import Player from '../player-objects/PlayerCharacter';
 
 export type StarSystemProps = {
     seed: String
@@ -15,6 +16,7 @@ export type StarSystemProps = {
     setCameraTarget?: Function
     orbitCamera: React.MutableRefObject<Camera>
     thirdPersonCamera: React.MutableRefObject<Camera>
+    playerRef: meshRefType
 }
 
 export default function StarSystem(props: StarSystemProps) {
@@ -195,7 +197,6 @@ export default function StarSystem(props: StarSystemProps) {
   const innerPlanetsRefs = useRef(Array.from({length: innerPlanets}, a => React.createRef<Mesh>()));
   const gasGiantRefs = useRef(Array.from({length: gasGiants}, a => React.createRef<Mesh>()));
 
-
   return (
     <>
       <Sun attributes={starAttributes} setCameraTarget={props.setCameraTarget} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera}/>
@@ -213,6 +214,8 @@ export default function StarSystem(props: StarSystemProps) {
       {gasGiantMoonsAttributes.map( (attributes, index) => {
         return <Moon planet={gasGiantRefs.current[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
       })}
+
+      <Player targetRef={innerPlanetsRefs.current[0]} startingPosition={new Vector3(0,0,0)} startingAngle={new Quaternion} meshRef={props.playerRef} />
     </>
   );
 }
