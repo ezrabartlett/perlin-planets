@@ -82,7 +82,8 @@ export default function Moon(props: MoonProps) {
                 }
             } else {
                 if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
+                    props.orbitCameraRef.current.getWorldPosition(cameraWorldPosition)
+                    material.uniforms.cameraPos.value = cameraWorldPosition;
                 }
             }
             meshRef.current && (material.uniforms.pCenter.value = meshRef.current.position)
@@ -90,6 +91,8 @@ export default function Moon(props: MoonProps) {
             console.log('no material')
         }
     }
+    
+    const cameraWorldPosition = new Vector3();
 
     const updateShipAtmpshereUniforms = () => {
         const material = shipAtmosphereRef.current!.material as ShaderMaterial;
@@ -100,7 +103,8 @@ export default function Moon(props: MoonProps) {
                 }
             } else {
                 if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
+                    props.thirdPersonCameraRef.current.getWorldPosition(cameraWorldPosition)
+                    material.uniforms.cameraPos.value = cameraWorldPosition;
                 }
             }
             meshRef.current && (material.uniforms.pCenter.value = meshRef.current.position)
@@ -126,8 +130,6 @@ export default function Moon(props: MoonProps) {
             const intersection = shipRayCaster.intersectObjects( [ meshRef.current ] )[0];
             intersection && intersection.point && (rayHitPosition = intersection.point);
 
-
-            console.log('intersection')
             if(intersection && intersection.point && rayIndicatorRef && rayIndicatorRef.current){
                 rayIndicatorRef.current.position.set(intersection.point.x, intersection.point.y, intersection.point.z);
             }

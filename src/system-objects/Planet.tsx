@@ -31,10 +31,6 @@ export type PlanetProps = {
     setCameraTarget?: Function
 }
 
-THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
-THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
-THREE.Mesh.prototype.raycast = acceleratedRaycast
-
 const getOrbitalPeriod = (orbitRadius: number, starMass: number) => {
     const gravitationalConstant = 6.674*Math.pow(10, -11) // in N*m^2*kg^-2
     const semiMajorAxis = orbitRadius*2 // in kg
@@ -98,12 +94,15 @@ export default function Planet(props: PlanetProps) {
         }
     }
 
+    const cameraWorldPosition = new Vector3();
+
     const updateShipAtmpshereUniforms = () => {
         const material = shipAtmosphereRef.current!.material as ShaderMaterial;
 
         if (material && material.uniforms) {
             if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
+                props.thirdPersonCameraRef.current.getWorldPosition(cameraWorldPosition)
+                material.uniforms.cameraPos.value = cameraWorldPosition;
             }
             props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)
         } else {
@@ -125,8 +124,6 @@ export default function Planet(props: PlanetProps) {
             const intersection = shipRayCaster.intersectObjects( [ props.meshRef.current ] )[0];
             intersection && intersection.point && (rayHitPosition = intersection.point);
 
-
-            console.log('intersection')
             if(intersection && intersection.point && rayIndicatorRef && rayIndicatorRef.current){
                 rayIndicatorRef.current.position.set(intersection.point.x, intersection.point.y, intersection.point.z);
             }
@@ -136,8 +133,6 @@ export default function Planet(props: PlanetProps) {
             props.meshRef.current.position.x = pos[0];
             props.meshRef.current.position.z = pos[1];
             props.meshRef.current.position.y = 0;
-            //console.log(meshRef.current.geometry.getAttribute("temperature"))
-            // meshRef.current.position.x += 1
         }
 
         if(cameraIndex===0) {
@@ -153,10 +148,10 @@ export default function Planet(props: PlanetProps) {
 
     return (
         <>
-            <mesh position={rayHitPosition} ref={rayIndicatorRef}>
+            {/*<mesh position={rayHitPosition} ref={rayIndicatorRef}>
                 <sphereGeometry args={[1000, 2, 2]}/>
                 <meshToonMaterial fog={true} color={'red'} gradientMap={threeTone} />
-            </mesh>
+    </mesh>*/}
             <mesh visible={true} ref={props.meshRef} onClick={handleCLicked}>
                 {/*<sphereGeometry args={[16, 40, 40]}/>*/}
                 <PlanetGeometry hasAtmosphere={props.attributes.hasAtmosphere} baseTemperature={baseTemperature} radius={radius} resolution={resolution} seed={props.attributes.seed} meshRef={surfaceMeshRef} colorProfile={props.colorProfile} />

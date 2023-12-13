@@ -95,6 +95,8 @@ export default function GasGiant(props: GasGiantProps) {
         }
     }
 
+    const cameraWorldPosition = new Vector3();
+
     const updateShipAtmpshereUniforms = () => {
         const material = shipAtmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
@@ -104,7 +106,8 @@ export default function GasGiant(props: GasGiantProps) {
                 }
             } else {
                 if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
+                    props.thirdPersonCameraRef.current.getWorldPosition(cameraWorldPosition)
+                    material.uniforms.cameraPos.value = cameraWorldPosition;
                 }
             }
             props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)

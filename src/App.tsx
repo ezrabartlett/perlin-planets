@@ -9,6 +9,7 @@ import { Stats } from '@react-three/drei';
 import { Effect } from './helpers/PostProcessingComponent';
 import UserInterface from './UI/UserInterface';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+import { meshRefType } from './types';
 
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
@@ -50,8 +51,8 @@ export default function App() {
     <div id="canvas-container">
       <Box component="div" className='h-screen w-full'>
         <UserInterface regenerate={regenerate} cameraIndex={cameraIndex} setCameraIndex={setCameraIndex}/>
-        <Canvas dpr={window.devicePixelRatio * 2} key={key} gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 10000000}}>
-          <Scene seed={seed} cameraIndex={cameraIndex}/>
+        <Canvas dpr={window.devicePixelRatio * 1.5} key={key} gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 10000000}}>
+          <Scene seed={seed} cameraIndex={cameraIndex} />
           <Stats/>
           {/*<Effect />*/}
         </Canvas>

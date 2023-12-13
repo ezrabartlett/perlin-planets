@@ -9,6 +9,7 @@ import {  EffectComposer } from '@react-three/postprocessing';
 import { Atmospheres } from './helpers/Atmosphere';
 import PostProcessingEffects from './helpers/PostProcessingEffects';
 import RandomNumberGenerator from './helpers/RandomNumberGenorator';
+import { meshRefType } from './types';
 
 
 type meshRefObject = React.MutableRefObject<Mesh<BufferGeometry<NormalBufferAttributes>, Material | Material[]> | null>
@@ -35,7 +36,7 @@ export default function Scene(props: SceneProps) {
     let startingCameraPos = new Vector3(0,0,0);
     const lerpTime = 0.3;
     const { size, camera } = useThree(); // Using the useThree hook to get size and camera
-    
+
     function SkyBox() {
         const { scene } = useThree();
         const loader = new CubeTextureLoader();
@@ -119,7 +120,7 @@ export default function Scene(props: SceneProps) {
             <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} />
             {/* multisampling = { 8 } DEFAULT ANTI-ALIASING SETTING*/}
             {/* Posprocessing effect. Couldn't get it to work but should return later */}
-            {/* <PostProcessingEffects Atmospheres={[]} cameraRef={orbitCamera} />*/}
+            {/* <PostProcessingEffects Atmospher es={[]} cameraRef={orbitCamera} />*/}
         </>
     );
 }

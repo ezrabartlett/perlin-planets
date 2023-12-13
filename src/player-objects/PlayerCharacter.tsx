@@ -1,15 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGLTF } from '@react-three/drei'
-import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion, MeshBasicMaterial, Euler} from 'three';
+import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion, MeshBasicMaterial, Euler, Raycaster, Camera} from 'three';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { meshRefType } from '../types';
 import { UFOModel } from '../assets/models/Ufo'
+import * as THREE from 'three';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
+THREE.Mesh.prototype.raycast = acceleratedRaycast
+
+const playerCaster = new Raycaster(undefined, undefined, 0, 10000000)
+playerCaster.firstHitOnly = true;
 
 export type PlayerProps = {
     startingPosition: Vector3
     startingAngle: Quaternion
     meshRef: meshRefType
-    targetRef: meshRefType
+    targetRef: meshRefType | undefined
 }
 
 export default function Player(props: PlayerProps) {
@@ -22,6 +31,7 @@ export default function Player(props: PlayerProps) {
     const acceleration = new Vector3(0,0,0)
     const accelerationConstant = 0
     const dampingConstant = .95;
+    const playerHeight = .95;
     // @ts-ignore
 
     const [foreward, setForward] = useState(0)
@@ -92,14 +102,38 @@ export default function Player(props: PlayerProps) {
         velocity.multiplyScalar(dampingConstant*delta)
     }
 
+    const rayDir = new Vector3()
+    let rayHitPosition = new Vector3(0, 0, 0);
+    let rayOrigin = new Vector3(0,0,0);
+    const rayIndicatorRef = useRef<Mesh>(null);
+    let playerVector = new Vector3(0,0,0);
+      
+    const calculateAndSetPlayerPosition = () => {
+        rayDir.subVectors(props.targetRef!.current!.position, meshRef.current!.position);
+        console.log(rayDir);
+        playerVector.copy(rayDir).setLength(playerHeight);
+        rayOrigin.addVectors(meshRef.current!.position, playerVector);
+        playerCaster.set(rayOrigin,rayDir);
+        const intersection = playerCaster.intersectObjects( [ props.targetRef!.current! ] )[0];
+        if(intersection && intersection.point){
+            rayHitPosition = intersection.point;
+            meshRef.current!.position.set(rayHitPosition.x, rayHitPosition.y, rayHitPosition.z)
+        };
+    }
+
     useFrame((state, delta) => {
-        if (meshRef.current) {
-            meshRef.current.getWorldDirection(acceleration)
+        if (meshRef.current && props.targetRef && props.targetRef.current) {
+            //meshRef.current.getWorldDirection(acceleration)
             meshRef.current.rotateY((lookLeft-lookRight)*0.5*delta)
+            //meshRef.current!.position.set(0,0,10);
+            if(meshRef.current.parent != props.targetRef.current) {
+                props.targetRef.current.attach(meshRef.current);
+            }
+            //calculateAndSetPlayerPosition()
             //accelerationConstant += delta*
             //meshRef.current.translateZ((accelerating)*0.5*maxSpeed)
             //accelerate(delta)
-            //move(delta)
+            //move(delta) 
             //dampenVelocity(delta)
         }
     }, -1)
@@ -108,8 +142,8 @@ export default function Player(props: PlayerProps) {
         <>
             <mesh ref={meshRef} position={props.startingPosition}>
                 <mesh position={new Vector3( 0, 0, 0)}>
-                    <boxGeometry args={[0.1, 0.2, 0.1]}/>
-                    <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />
+                    <boxGeometry args={[.10, .2, .1]}/>
+                    <meshToonMaterial color={'#e56b6g'} gradientMap={threeTone} />
                 </mesh>
                 <mesh position={new Vector3( 0, 0.2, 0)}>
                     <boxGeometry args={[0.1, 0.1, 0.1]}/>
