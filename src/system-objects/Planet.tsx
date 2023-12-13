@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, RefObject} from 'react';
+import React, {useRef, useEffect, RefObject, useMemo} from 'react';
 import { createRoot } from 'react-dom/client'
 import * as THREE from 'three';
 import three, { PointLight, Raycaster, Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
@@ -40,7 +40,7 @@ const getOrbitalPeriod = (orbitRadius: number, starMass: number) => {
 export default function Planet(props: PlanetProps) {
     const material = new MeshToonMaterial(); // MeshStandardMaterial({color: 'blue' })
     const orbitRadius = props.attributes.orbitRadius;
-    const orbitAtmosphereRef = useRef<Mesh>(null);
+    const atmosphereRef = useRef<Mesh>(null);
     
     const shipAtmosphereRef = useRef<Mesh>(null);
     const surfaceMeshRef = useRef<Mesh>(null);
@@ -51,6 +51,16 @@ export default function Planet(props: PlanetProps) {
     const atmosphereColor = new Color(102/255, 162/255, 209/255)
     const shipRayCaster = new Raycaster(undefined, undefined, 0, 10000)
     shipRayCaster.firstHitOnly = true;
+
+    const atmosphereUniforms = useMemo(
+        () => ({
+            uSunPos: {value: [0,0,0]},
+            uColor: {value: atmosphereColor}, 
+            cameraPos: {value: [0,0,0]}, 
+            pCenter: {value: [0,0,0]}, 
+            uRadius: {value: props.attributes.radius*1.2}
+        }), []
+    );
 
     let cameraIndex = props.cameraIndex
 
@@ -82,29 +92,18 @@ export default function Planet(props: PlanetProps) {
         return [orbitRadius*(Math.cos(alpha)), orbitRadius*(Math.sin(alpha))]
     }
 
-    const updateOrbitAtmpshereUniforms = () => {
-        const material = orbitAtmosphereRef.current!.material as ShaderMaterial;
-        if (material && material.uniforms) {
-            if (props.orbitCameraRef && props.orbitCameraRef.current) {
-                material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
-            }
-            props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)
-        } else {
-            console.log('no material')
-        }
-    }
-
     const cameraWorldPosition = new Vector3();
 
-    const updateShipAtmpshereUniforms = () => {
-        const material = shipAtmosphereRef.current!.material as ShaderMaterial;
-
+    const updateAtmosphereUniforms = () => {
+        const material = atmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
-            if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                props.thirdPersonCameraRef.current.getWorldPosition(cameraWorldPosition)
-                material.uniforms.cameraPos.value = cameraWorldPosition;
+            if (props.orbitCameraRef && props.orbitCameraRef.current && cameraIndex === 0 ) {
+                material.uniforms.cameraPos.value = props.orbitCameraRef.current.position
+            } else if(props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
+                cameraWorldPosition.copy(props.thirdPersonCameraRef.current.getWorldPosition(cameraWorldPosition))
+                material.uniforms.cameraPos.value = cameraWorldPosition
             }
-            props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)
+            props.meshRef.current && (material.uniforms.pCenter.value =  props.meshRef.current.position)
         } else {
             console.log('no material')
         }
@@ -134,12 +133,7 @@ export default function Planet(props: PlanetProps) {
             props.meshRef.current.position.z = pos[1];
             props.meshRef.current.position.y = 0;
         }
-
-        if(cameraIndex===0) {
-            updateOrbitAtmpshereUniforms();
-        } else {
-            updateShipAtmpshereUniforms();
-        }
+        updateAtmosphereUniforms();
     })
 
     //useEffect(() => {
@@ -159,14 +153,10 @@ export default function Planet(props: PlanetProps) {
                     <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={'#66a2d1'} gradientMap={threeTone} />
                 </mesh>}
-                {<mesh visible={cameraIndex===0} ref={orbitAtmosphereRef} renderOrder={-10}>
+                <mesh visible={true} ref={atmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uColor: {value: atmosphereColor}, uRadius: {value: props.attributes.radius*1.2}}} />}
-                </mesh>}
-                {<mesh visible={cameraIndex!==0} ref={shipAtmosphereRef} renderOrder={-10}>
-                    <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.2}}} />}
-                </mesh>}
+                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
+                </mesh>
             </mesh>
         </>
     );

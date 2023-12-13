@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGLTF } from '@react-three/drei'
 import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion, MeshBasicMaterial, Euler} from 'three';
 import { useFrame, useLoader } from '@react-three/fiber';
@@ -112,6 +112,12 @@ export default function Ship(props: ShipProps) {
         }
     }
 
+    useEffect(() => {
+        if (meshRef.current) {
+            meshRef.current.position.copy(props.startingPosition)
+        }
+    }, [])
+
     const move = (delta: number) => {
         if (meshRef.current) {
             meshRef.current.position.add(velocity.multiplyScalar(delta))
@@ -138,7 +144,7 @@ export default function Ship(props: ShipProps) {
 
     return (
         <>
-            <mesh ref={meshRef} position={props.startingPosition}>
+            <mesh ref={meshRef}>
                 <mesh>
                     <coneGeometry args={[0.8, 0.3, 30, 8]}/>
                     <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />

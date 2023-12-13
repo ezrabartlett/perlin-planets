@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, RefObject} from 'react';
+import React, {useRef, useEffect, RefObject, useMemo} from 'react';
 import { Vector3, Mesh, MeshToonMaterial, Color, TextureLoader, NearestFilter, Texture, ShaderMaterial, Camera, DoubleSide, BackSide} from 'three';
 import { useState } from 'react';
 
@@ -39,7 +39,7 @@ const getOrbitalPeriod = (orbitRadius: number, starMass: number) => {
 export default function GasGiant(props: GasGiantProps) {
     const material = new MeshToonMaterial(); // MeshStandardMaterial({color: 'blue' })
     const orbitRadius = props.attributes.orbitRadius;
-    const orbitAtmosphereRef = useRef<Mesh>(null);
+    const atmosphereRef = useRef<Mesh>(null);
     const shipAtmosphereRef = useRef<Mesh>(null);
     const [position, setPosition] = useState(new Vector3(props.attributes.orbitRadius, 0, 0))
     const radius = props.attributes.radius
@@ -48,6 +48,16 @@ export default function GasGiant(props: GasGiantProps) {
     const atmosphereColor = hexToRgb(props.attributes.color)
 
     let cameraIndex = props.cameraIndex
+
+    const atmosphereUniforms = useMemo(
+        () => ({
+            uSunPos: {value: [0,0,0]},
+            uColor: {value: atmosphereColor}, 
+            cameraPos: {value: [0,0,0]}, 
+            pCenter: {value: [0,0,0]}, 
+            uRadius: {value: props.attributes.radius*1.06}
+        }), []
+    );
 
     useEffect(() => {
         cameraIndex = props.cameraIndex
@@ -77,44 +87,22 @@ export default function GasGiant(props: GasGiantProps) {
         return [orbitRadius*(Math.cos(alpha)), orbitRadius*(Math.sin(alpha))]
     }
 
-    const updateOrbitAtmpshereUniforms = () => {
-        const material = orbitAtmosphereRef.current!.material as ShaderMaterial;
+    const updateAtmosphereUniforms = () => {
+        const material = atmosphereRef.current!.material as ShaderMaterial;
         if (material && material.uniforms) {
-            if(props.cameraIndex === 0) {
-                if (props.orbitCameraRef && props.orbitCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
-                }
-            } else {
-                if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.thirdPersonCameraRef.current.position;
-                }
+            if (props.orbitCameraRef && props.orbitCameraRef.current && cameraIndex === 0 ) {
+                material.uniforms.cameraPos.value = props.orbitCameraRef.current.position
+            } else if(props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
+                cameraWorldPosition.copy(props.thirdPersonCameraRef.current.getWorldPosition(cameraWorldPosition))
+                material.uniforms.cameraPos.value = cameraWorldPosition
             }
-            props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)
+            props.meshRef.current && (material.uniforms.pCenter.value =  props.meshRef.current.position)
         } else {
             console.log('no material')
         }
     }
 
     const cameraWorldPosition = new Vector3();
-
-    const updateShipAtmpshereUniforms = () => {
-        const material = shipAtmosphereRef.current!.material as ShaderMaterial;
-        if (material && material.uniforms) {
-            if(cameraIndex === 0) {
-                if (props.orbitCameraRef && props.orbitCameraRef.current) {
-                    material.uniforms.cameraPos.value = props.orbitCameraRef.current.position;
-                }
-            } else {
-                if (props.thirdPersonCameraRef && props.thirdPersonCameraRef.current) {
-                    props.thirdPersonCameraRef.current.getWorldPosition(cameraWorldPosition)
-                    material.uniforms.cameraPos.value = cameraWorldPosition;
-                }
-            }
-            props.meshRef.current && (material.uniforms.pCenter.value = props.meshRef.current.position)
-        } else {
-            console.log('no material')
-        }
-    }
 
     useFrame((state, delta) => {
         if (props.meshRef.current) {// && props.colorProfile===0) {
@@ -129,11 +117,7 @@ export default function GasGiant(props: GasGiantProps) {
             // meshRef.current.position.x += 1
         }
 
-        if(cameraIndex) {
-            updateOrbitAtmpshereUniforms();
-        } else {
-            updateShipAtmpshereUniforms();
-        }
+        updateAtmosphereUniforms();
     })
 
     //useEffect(() => {
@@ -147,14 +131,10 @@ export default function GasGiant(props: GasGiantProps) {
                     <sphereGeometry args={[radius, resolution, resolution]}/>
                     <meshToonMaterial fog={true} color={props.attributes.color} gradientMap={threeTone} />
                 </mesh>}
-                {<mesh visible={cameraIndex===0} ref={shipAtmosphereRef} renderOrder={-10}>
+                <mesh visible={true} ref={atmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.06, 30, 30]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uColor: {value: atmosphereColor}, uRadius: {value: props.attributes.radius*1.06}}} />}
-                </mesh>}
-                {<mesh visible={cameraIndex!==0} ref={orbitAtmosphereRef} renderOrder={-10}>
-                    <sphereGeometry args={[radius*1.06, 30, 30]}/>
-                    {<shaderMaterial side={BackSide} transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={{uSunPos: {value: [0,0,0]}, uColor: {value: atmosphereColor}, cameraPos: {value: [0,0,0]}, pCenter: {value: [0,0,0]}, uRadius: {value: props.attributes.radius*1.06}}} />}
-                </mesh>}
+                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
+                </mesh>
             </mesh>
         </>
     );
