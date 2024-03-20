@@ -9,13 +9,14 @@ import {  EffectComposer } from '@react-three/postprocessing';
 import { Atmospheres } from './helpers/Atmosphere';
 import PostProcessingEffects from './helpers/PostProcessingEffects';
 import RandomNumberGenerator from './helpers/RandomNumberGenorator';
+import { meshRefType } from './types';
 
 
 type meshRefObject = React.MutableRefObject<Mesh<BufferGeometry<NormalBufferAttributes>, Material | Material[]> | null>
 
 export type SceneProps = {
     seed: String,
-    useOrbitCamera: boolean
+    cameraIndex: number
 }
 
 export default function Scene(props: SceneProps) {
@@ -24,6 +25,7 @@ export default function Scene(props: SceneProps) {
     const thirdPersonCameraRef = useRef<any>(null)
     const orbitCamera = useRef<any>(null)
     const shipRef = useRef<Mesh | null>(null);
+    const playerRef = useRef<Mesh | null>(null);
     let targetRef = useRef<Mesh | null>(null);
     const { set, scene } = useThree();
     const orbitCameraPosition = new Vector3(0, 20000000, 70000000);
@@ -32,10 +34,9 @@ export default function Scene(props: SceneProps) {
     let offSet = new Vector3(0,0,0);
     let startingCameraTarget = new Vector3(0,0,0);
     let startingCameraPos = new Vector3(0,0,0);
-    let [cameraIndex, setCameraIndex] = useState(1)
     const lerpTime = 0.3;
     const { size, camera } = useThree(); // Using the useThree hook to get size and camera
-    
+
     function SkyBox() {
         const { scene } = useThree();
         const loader = new CubeTextureLoader();
@@ -55,17 +56,15 @@ export default function Scene(props: SceneProps) {
       }
 
     useEffect(() => {
-        if(props.useOrbitCamera) {
+        if(props.cameraIndex === 0) {
             set({ camera: orbitCamera.current });
-            setCameraIndex(1)
         } else {
-            setCameraIndex(0)
             set({ camera: thirdPersonCameraRef.current });
         }
-    }, [props.useOrbitCamera])
+    }, [props.cameraIndex])
 
     const setCameraTarget = (newTarget: meshRefObject) => {
-        if(!props.useOrbitCamera || newTarget === targetRef) {
+        if(props.cameraIndex !== 0|| newTarget === targetRef) {
             return
         }
 
@@ -112,16 +111,16 @@ export default function Scene(props: SceneProps) {
             {/*<SkyBox/>*/}
             {<ambientLight color={'white'} intensity={0.2} />}
             <color attach="background" args={["black" as ColorRepresentation]} />
-            {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} target={shipRef}/>}
+            {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} targets={[shipRef, shipRef, playerRef]} cameraIndex={props.cameraIndex}/>}
             
             <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={6000000000}/>
             <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
 
-            <StarSystem cameraIndex={cameraIndex} orbitCamera={orbitCamera} thirdPersonCamera={thirdPersonCameraRef} setCameraTarget={setCameraTarget} time={3} seed={props.seed}/>
+            <StarSystem cameraIndex={props.cameraIndex} orbitCamera={orbitCamera} thirdPersonCamera={thirdPersonCameraRef} setCameraTarget={setCameraTarget} time={3} seed={props.seed} playerRef={playerRef}/>
             <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} />
             {/* multisampling = { 8 } DEFAULT ANTI-ALIASING SETTING*/}
             {/* Posprocessing effect. Couldn't get it to work but should return later */}
-            {/* <PostProcessingEffects Atmospheres={[]} cameraRef={orbitCamera} />*/}
+            {/* <PostProcessingEffects Atmospher es={[]} cameraRef={orbitCamera} />*/}
         </>
     );
 }

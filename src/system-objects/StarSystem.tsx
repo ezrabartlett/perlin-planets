@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client'
-import { Camera, Mesh, MeshStandardMaterial, PointLight } from 'three';
+import { Camera, Mesh, MeshStandardMaterial, PointLight, Quaternion, Vector3 } from 'three';
 import RandomNumberGenerator from '../helpers/RandomNumberGenorator';
 import { GasGiantAttributes, meshRefType, MoonAttributes, PlanetAttributes, StarAttributes, StarClass } from '../types';
 import Moon from './Moon';
 import Planet from './Planet';
 import Sun from './Sun';
 import GasGiant from './GasGiant';
+import Player from '../player-objects/PlayerCharacter';
+import ThirdPersonCamera from '../helpers/ThirdPersonCamera';
 
 export type StarSystemProps = {
     seed: String
@@ -15,6 +17,7 @@ export type StarSystemProps = {
     setCameraTarget?: Function
     orbitCamera: React.MutableRefObject<Camera>
     thirdPersonCamera: React.MutableRefObject<Camera>
+    playerRef: meshRefType
 }
 
 export default function StarSystem(props: StarSystemProps) {
@@ -90,6 +93,8 @@ export default function StarSystem(props: StarSystemProps) {
   const starClassDistribution = [0,0,0,0,0,0,0,1,1,2,2]
   const starClassIndex = starClassDistribution[random.getInt(0, starClassDistribution.length)]
   const starClass = STAR_CLASSES[starClassIndex]
+
+  const [playerTarget, setPlayerTarget] = useState<meshRefType | undefined>()
 
   let starAttributes = {
     radius: random.getInt(starClass.radiusMin, starClass.radiusMax),
@@ -195,6 +200,8 @@ export default function StarSystem(props: StarSystemProps) {
   const innerPlanetsRefs = useRef(Array.from({length: innerPlanets}, a => React.createRef<Mesh>()));
   const gasGiantRefs = useRef(Array.from({length: gasGiants}, a => React.createRef<Mesh>()));
 
+  // Set initial player target (for now)
+  useEffect(()=>{innerPlanetsRefs.current.length > 0 && setPlayerTarget(innerPlanetsRefs.current[0])},[innerPlanetsRefs])
 
   return (
     <>
@@ -213,6 +220,8 @@ export default function StarSystem(props: StarSystemProps) {
       {gasGiantMoonsAttributes.map( (attributes, index) => {
         return <Moon planet={gasGiantRefs.current[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
       })}
+
+      <Player nearestBody={playerTarget} startingPosition={new Vector3(0,0,0)} startingAngle={new Quaternion} meshRef={props.playerRef} />
     </>
   );
 }

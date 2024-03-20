@@ -3,15 +3,23 @@ import './output.css';
 import { createRoot } from 'react-dom/client'
 import { Canvas } from '@react-three/fiber';
 import Box from '@mui/material/Box';
+import * as THREE from 'three'
 import Scene from './Scene';
 import { Stats } from '@react-three/drei';
 import { Effect } from './helpers/PostProcessingComponent';
 import UserInterface from './UI/UserInterface';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+import { meshRefType } from './types';
+
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
+THREE.Mesh.prototype.raycast = acceleratedRaycast
 
 export default function App() {
   const [key, setKey] = useState(0);
   const [seed, setSeed] = useState('Ezra Bartlett');
   const [useOrbitCamera, setUseOrbitCamera] = useState(true);
+  const [cameraIndex, setCameraIndex] = useState(0)
 
   const regenerate = (seed: string) => {
     setSeed(seed)
@@ -42,9 +50,9 @@ export default function App() {
   return (
     <div id="canvas-container">
       <Box component="div" className='h-screen w-full'>
-        <UserInterface regenerate={regenerate} changeView={changeView} orbitCamera={useOrbitCamera}/>
-        <Canvas dpr={window.devicePixelRatio * 2} key={key} gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 10000000}}>
-          <Scene seed={seed} useOrbitCamera={useOrbitCamera}/>
+        <UserInterface regenerate={regenerate} cameraIndex={cameraIndex} setCameraIndex={setCameraIndex}/>
+        <Canvas dpr={window.devicePixelRatio * 1} key={key} gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 10000000}}>
+          <Scene seed={seed} cameraIndex={cameraIndex} />
           <Stats/>
           {/*<Effect />*/}
         </Canvas>

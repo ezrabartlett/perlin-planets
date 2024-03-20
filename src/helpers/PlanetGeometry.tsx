@@ -80,6 +80,7 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
     material.uniforms.time = {value: 1.0}
 
     geometry.computeVertexNormals()
+    geometry.computeBoundsTree();
   }, []);
 
   return (
