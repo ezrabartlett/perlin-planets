@@ -18,6 +18,7 @@
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/three": "^0.154.0",
+    "@vercel/analytics": "^1.2.2",
     "alea": "^1.0.1",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
