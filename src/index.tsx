@@ -10,7 +10,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <>
-    <Analytics/>
+    <Analytics mode={'production'}/>
     <React.StrictMode>
       <App />
     </React.StrictMode>
