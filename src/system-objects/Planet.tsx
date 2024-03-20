@@ -73,8 +73,6 @@ export default function Planet(props: PlanetProps) {
     threeTone.magFilter = NearestFilter
 
     const orbitalPeriod = getOrbitalPeriod(props.attributes.orbitRadius, props.starMass)
-    console.log('planet orbital period')
-    console.log(orbitalPeriod)
     let alphaLast = 0
     let timeLast = 0
     const handleCLicked = (event: any) => {
@@ -155,7 +153,7 @@ export default function Planet(props: PlanetProps) {
                 </mesh>}
                 <mesh visible={true} ref={atmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
+                    {<shaderMaterial transparent side={BackSide} fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
                 </mesh>
             </mesh>
         </>

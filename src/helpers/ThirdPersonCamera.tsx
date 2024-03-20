@@ -57,10 +57,7 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
             camera.current.rotation.set(0,0,0)
             camera.current.rotateY(Math.PI)
             camera.current.getWorldPosition(worldPosition)
-            console.log(worldPosition)
             props.targets[props.cameraIndex].current!.getWorldPosition(worldPosition)
-            console.log(worldPosition)
-            console.log(props.targets[props.cameraIndex].current!.position)
         }
     },[props.cameraIndex])
 

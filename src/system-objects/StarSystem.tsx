@@ -221,7 +221,7 @@ export default function StarSystem(props: StarSystemProps) {
         return <Moon planet={gasGiantRefs.current[attributes.planet]} cameraIndex={props.cameraIndex} orbitCameraRef={props.orbitCamera} thirdPersonCameraRef={props.thirdPersonCamera} setCameraTarget={props.setCameraTarget} colorProfile={random.getInt(0, 2)} attributes={attributes}/>
       })}
 
-      <Player targetRef={playerTarget} startingPosition={new Vector3(0,0,0)} startingAngle={new Quaternion} meshRef={props.playerRef} />
+      <Player nearestBody={playerTarget} startingPosition={new Vector3(0,0,0)} startingAngle={new Quaternion} meshRef={props.playerRef} />
     </>
   );
 }

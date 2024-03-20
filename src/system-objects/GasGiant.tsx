@@ -68,8 +68,6 @@ export default function GasGiant(props: GasGiantProps) {
     threeTone.magFilter = NearestFilter
 
     const orbitalPeriod = getOrbitalPeriod(props.attributes.orbitRadius, props.starMass)
-    console.log('planet orbital period')
-    console.log(orbitalPeriod)
     let alphaLast = 0
     let timeLast = 0
     const handleCLicked = (event: any) => {
@@ -133,7 +131,7 @@ export default function GasGiant(props: GasGiantProps) {
                 </mesh>}
                 <mesh visible={true} ref={atmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.06, 30, 30]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
+                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} side={BackSide} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
                 </mesh>
             </mesh>
         </>

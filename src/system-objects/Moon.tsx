@@ -53,8 +53,6 @@ export default function Moon(props: MoonProps) {
     threeTone.magFilter = NearestFilter
 
     const orbitalPeriod = getOrbitalPeriod(props.attributes.orbitRadius, props.attributes.planetMass)
-    console.log('moon orbital period')
-    console.log(orbitalPeriod)
     let alphaLast = 0
     let timeLast = 0
     const handleCLicked = (event: any) => {
@@ -153,7 +151,7 @@ export default function Moon(props: MoonProps) {
                 </mesh>
                 <mesh visible={props.attributes.hasAtmosphere} ref={atmosphereRef} renderOrder={-10}>
                     <sphereGeometry args={[radius*1.2, 30, 30]}/>
-                    {<shaderMaterial transparent fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
+                    {<shaderMaterial transparent side={BackSide} fragmentShader={atmosphereFragment} vertexShader={atmosphereVertex} uniforms={atmosphereUniforms} />}
                 </mesh>
             </mesh>
         </>
