@@ -33,6 +33,8 @@ export default function Player(props: PlayerProps) {
     const dampingConstant = .95;
     const playerHeight = .95;
     // @ts-ignore
+    const [yRotation, setYRotation] = useState(0)
+
 
     const [foreward, setForward] = useState(0)
     const [backward, setBackward] = useState(0)
@@ -42,6 +44,7 @@ export default function Player(props: PlayerProps) {
 
     const [lookLeft, setLookLeft] = useState(0)
     const [lookRight, setLookRight] = useState(0)
+    const [theta, setTheta] = useState(0)
 
     window.addEventListener('keydown', (e) => {
         //window.alert(e.code)
@@ -121,55 +124,27 @@ export default function Player(props: PlayerProps) {
 
         //Get local down
         up.set(0,1,0)
+        player.rotation.set(0,0,0);
         up.applyQuaternion(player.quaternion)
-       //console.log(down)
         
         //Get difference between down and 0,0,0 (The center of the parent planet)
         //targetDirection.copy(player.position).negate()
         positionNormal.copy(player.position).normalize()
-        playerUpNormal.copy(up).negate().normalize()
-        console.log('Position normal')
-        console.log(positionNormal)
-
-        console.log('Player normal')
-        console.log(playerUpNormal)
+        playerUpNormal.copy(up).normalize()
+        //console.log('Position normal')
+        //console.log(positionNormal)
 
         cross.crossVectors(playerUpNormal, positionNormal).normalize()
 
-        console.log('difference')
-        console.log(playerUpNormal.angleTo(positionNormal))
-
-        console.log('cross')
-        console.log(cross)
-
-        console.log('math result')
-        playerUpNormal.applyAxisAngle(cross, (playerUpNormal.angleTo(positionNormal)))
-        console.log(playerUpNormal)
         //console.log('difference')
-        //console.log('difference')
-        //playerUpNormal.applyAxisAngle()
+        //console.log(playerUpNormal.angleTo(positionNormal))
+
         player.rotateOnAxis(cross, playerUpNormal.angleTo(positionNormal))
-        console.log(playerUpNormal)
-        //player.rotateX(difference.x)
-        //player.rotateY(difference.y)
-        //player.rotateZ(difference.z)
 
         difference.setFromUnitVectors(positionNormal, playerUpNormal)
-        console.log(difference)
-        //console.log(player.up = player       
-        playerVector.copy(rayDir).setLength(playerHeight);
         rayDir.subVectors(props.nearestBody!.current!.position, meshRef.current!.position).setLength(1);
         meshRef.current?.getWorldPosition(playerWorldPosition);
-
-        //up.set(0,-1,0)
-
-        //up.applyQuaternion(player.quaternion)
-        //console.log('down');
-        //console.log(down)
-        
         playerVector.copy(rayDir).setLength(playerHeight);
-
-       // console.log(meshRef!.current!.rotation);
 
         rayOrigin.addVectors(playerWorldPosition, playerVector);
 
@@ -190,7 +165,7 @@ export default function Player(props: PlayerProps) {
         //props.nearestBody && props.nearestBody.current && meshRef && meshRef.current && meshRef && meshRef.current.position.set(props.nearestBody.current.position.x, props.nearestBody.current.position.y, props.nearestBody.current.position.z)
         if(props.nearestBody && props.nearestBody.current && meshRef && meshRef.current) {
             props.nearestBody?.current.attach(meshRef.current);
-            meshRef.current.position.set(1000000,0,0);
+            //meshRef.current.position.set(500000,500000,0);
         }
 
     }, [props.nearestBody, meshRef])
@@ -213,11 +188,18 @@ export default function Player(props: PlayerProps) {
             }
 
             meshRef.current.getWorldDirection(playerWorldDirection)
-        
+            
+            setTheta(theta+.003);
+            
+            meshRef.current.position.set(870000*Math.cos(theta),870000*Math.sin(theta),0)
             //playerDownVector = new Vector3(playerDownVector.x, playerDownVector.y, playerDownVector.z)
             //console.log(meshRef.current.rotation);
             calculateAndSetPlayerPosition()
-            meshRef.current.rotateY((lookLeft-lookRight)*0.5*delta)
+            setYRotation(yRotation+(lookLeft-lookRight)*0.5*delta);
+            meshRef.current.rotateY(yRotation)
+
+            //console.log(`player direction = ${playerWorldDirection}`)
+            
             //accelerationConstant += delta*
             //meshRef.current.translateZ((accelerating)*0.5*maxSpeed)
             //accelerate(delta)
