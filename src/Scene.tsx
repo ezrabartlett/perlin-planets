@@ -108,7 +108,7 @@ export default function Scene(props: SceneProps) {
 
     return (
         <>
-            {/*<SkyBox/>*/}
+            {<SkyBox/>}
             {<ambientLight color={'white'} intensity={0.2} />}
             <color attach="background" args={["black" as ColorRepresentation]} />
             {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} targets={[shipRef, shipRef, playerRef]} cameraIndex={props.cameraIndex}/>}
