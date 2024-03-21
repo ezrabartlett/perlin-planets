@@ -46,7 +46,7 @@ export default function Planet(props: PlanetProps) {
     const surfaceMeshRef = useRef<Mesh>(null);
 
     const radius = props.attributes.radius
-    const resolution = 80
+    const resolution = 100
     const baseTemperature = 100
     const atmosphereColor = new Color(102/255, 162/255, 209/255)
     const shipRayCaster = new Raycaster(undefined, undefined, 0, 10000)

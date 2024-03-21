@@ -44,11 +44,10 @@ export default function Player(props: PlayerProps) {
 
     const [right, setRight] = useState(0)
     const [left, setLeft] = useState(0)
-    const [maxSpeed, setMaxSpeed] = useState(.5)
+    const [maxSpeed, setMaxSpeed] = useState(100)
 
     const [lookLeft, setLookLeft] = useState(0)
     const [lookRight, setLookRight] = useState(0)
-    const [theta, setTheta] = useState(0)
 
     window.addEventListener('keydown', (e) => {
         //window.alert(e.code)
@@ -118,7 +117,6 @@ export default function Player(props: PlayerProps) {
     const localHitPoint = new Vector3()
     let playerWorldDirection = new Vector3()
     let offSetVector = new Vector3(0,0,0);
-    let zeroVector = new Vector3(0,0,0)
     let up = new Vector3(0,1,0)
     let positionNormal = new Vector3(0,0,0)
     let playerUpNormal = new Vector3(0,0,0)
@@ -163,12 +161,8 @@ export default function Player(props: PlayerProps) {
         const intersection = playerCaster.intersectObjects( [ props.nearestBody!.current! ] )[0];
         //console.log(intersection)
         if(intersection && intersection.point){
-            const worldPoint = intersection.point;
-            localHitPoint.copy(props.nearestBody!.current!.worldToLocal(worldPoint));
-            console.log('hit')
-            console.log(localHitPoint)
-            rayHitPosition = intersection.point;
-            meshRef.current!.position.setLength(localHitPoint.length()+playerHeight*50)
+            localHitPoint.copy(props.nearestBody!.current!.worldToLocal(intersection.point));
+            meshRef.current!.position.setLength(localHitPoint.length()+200)
         };
     }
 
@@ -199,9 +193,8 @@ export default function Player(props: PlayerProps) {
 
             meshRef.current.getWorldDirection(playerWorldDirection)
             
-            setTheta(theta+.0002);
-            meshRef.current.translateZ((forward-backward)*500*maxSpeed)
-            meshRef.current.translateX((left-right)*500*maxSpeed)
+            meshRef.current.translateZ((forward-backward)*maxSpeed)
+            meshRef.current.translateX((left-right)*maxSpeed)
 
             //setPlayerPosition(new Vector3(1000, 1000, 0))
             //meshRef.current.position.set(830000*Math.cos(theta),830000*Math.sin(theta),0)
