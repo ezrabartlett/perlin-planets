@@ -31,20 +31,23 @@ export default function Player(props: PlayerProps) {
     const acceleration = new Vector3(0,0,0)
     const accelerationConstant = 0
     const dampingConstant = .95;
-    const playerHeight = .95;
+    const playerHeight = 1;
+    const rayOffset = 400;
+
     // @ts-ignore
     const [yRotation, setYRotation] = useState(0)
+    const [playerPosition, setPlayerPosition] = useState(new Vector3())
 
 
-    const [foreward, setForward] = useState(0)
+    const [forward, setForward] = useState(0)
     const [backward, setBackward] = useState(0)
 
     const [right, setRight] = useState(0)
     const [left, setLeft] = useState(0)
+    const [maxSpeed, setMaxSpeed] = useState(100)
 
     const [lookLeft, setLookLeft] = useState(0)
     const [lookRight, setLookRight] = useState(0)
-    const [theta, setTheta] = useState(0)
 
     window.addEventListener('keydown', (e) => {
         //window.alert(e.code)
@@ -113,8 +116,7 @@ export default function Player(props: PlayerProps) {
     const playerWorldPosition = new Vector3()
     const localHitPoint = new Vector3()
     let playerWorldDirection = new Vector3()
-    let difference = new Quaternion(0,0,0);
-    let zeroVector = new Vector3(0,0,0)
+    let offSetVector = new Vector3(0,0,0);
     let up = new Vector3(0,1,0)
     let positionNormal = new Vector3(0,0,0)
     let playerUpNormal = new Vector3(0,0,0)
@@ -122,9 +124,11 @@ export default function Player(props: PlayerProps) {
     const calculateAndSetPlayerPosition = () => {
         const player = meshRef!.current!
 
-        //Get local down
+        //Get local up
         up.set(0,1,0)
+        //reset player rotation for calculation
         player.rotation.set(0,0,0);
+        // Match up vector to player up
         up.applyQuaternion(player.quaternion)
         
         //Get difference between down and 0,0,0 (The center of the parent planet)
@@ -141,22 +145,24 @@ export default function Player(props: PlayerProps) {
 
         player.rotateOnAxis(cross, playerUpNormal.angleTo(positionNormal))
 
-        difference.setFromUnitVectors(positionNormal, playerUpNormal)
-        rayDir.subVectors(props.nearestBody!.current!.position, meshRef.current!.position).setLength(1);
-        meshRef.current?.getWorldPosition(playerWorldPosition);
-        playerVector.copy(rayDir).setLength(playerHeight);
+        //calculate ray origin locally
+        playerVector.copy(meshRef.current!.position);
+        offSetVector.copy(playerVector).setLength(rayOffset);
+        playerVector.add(offSetVector);
+        //convert to world
+        rayOrigin.copy(props.nearestBody!.current!.localToWorld(playerVector));
 
-        rayOrigin.addVectors(playerWorldPosition, playerVector);
+        //Calculate the ray direction
+        rayDir.subVectors(rayOrigin, props.nearestBody!.current!.position).negate();
+
+        //rayOrigin.addVectors(playerWorldPosition, rayDir);
 
         playerCaster.set(rayOrigin,rayDir);
         const intersection = playerCaster.intersectObjects( [ props.nearestBody!.current! ] )[0];
+        //console.log(intersection)
         if(intersection && intersection.point){
-            const worldPoint = intersection.point;
-            meshRef.current!.worldToLocal(localHitPoint.copy(worldPoint));
-            //console.log('hit')
-            //console.log(localHitPoint)
-            rayHitPosition = intersection.point;
-            //meshRef.current!.position.set(localHitPoint.x, localHitPoint.y, localHitPoint.z)
+            localHitPoint.copy(props.nearestBody!.current!.worldToLocal(intersection.point));
+            meshRef.current!.position.setLength(localHitPoint.length()+200)
         };
     }
 
@@ -165,10 +171,10 @@ export default function Player(props: PlayerProps) {
         //props.nearestBody && props.nearestBody.current && meshRef && meshRef.current && meshRef && meshRef.current.position.set(props.nearestBody.current.position.x, props.nearestBody.current.position.y, props.nearestBody.current.position.z)
         if(props.nearestBody && props.nearestBody.current && meshRef && meshRef.current) {
             props.nearestBody?.current.attach(meshRef.current);
-            //meshRef.current.position.set(500000,500000,0);
+            meshRef.current.position.set(830000,830000,0);
         }
 
-    }, [props.nearestBody, meshRef])
+    }, [props.nearestBody])
 
     const calculatePlayerDownVector = () => {
         let playerDirection = new Vector3()
@@ -181,23 +187,20 @@ export default function Player(props: PlayerProps) {
 
     useFrame((state, delta) => {
         if (meshRef.current && props.nearestBody && props.nearestBody.current) {
-            //meshRef.current.getWorldDirection(acceleration)
-            //meshRef.current!.position.set(0,0,10);
             if(meshRef.current.parent != props.nearestBody.current) {
                 props.nearestBody.current.attach(meshRef.current);
             }
 
             meshRef.current.getWorldDirection(playerWorldDirection)
             
-            setTheta(theta+.003);
-            
-            meshRef.current.position.set(870000*Math.cos(theta),870000*Math.sin(theta),0)
-            //playerDownVector = new Vector3(playerDownVector.x, playerDownVector.y, playerDownVector.z)
-            //console.log(meshRef.current.rotation);
-            calculateAndSetPlayerPosition()
-            setYRotation(yRotation+(lookLeft-lookRight)*0.5*delta);
-            meshRef.current.rotateY(yRotation)
+            meshRef.current.translateZ((forward-backward)*maxSpeed)
+            meshRef.current.translateX((left-right)*maxSpeed)
 
+            //setPlayerPosition(new Vector3(1000, 1000, 0))
+            //meshRef.current.position.set(830000*Math.cos(theta),830000*Math.sin(theta),0)
+            setYRotation(yRotation+(lookLeft-lookRight)*0.5*delta);
+            calculateAndSetPlayerPosition()
+            meshRef.current.rotateY(yRotation)
             //console.log(`player direction = ${playerWorldDirection}`)
             
             //accelerationConstant += delta*
@@ -206,17 +209,17 @@ export default function Player(props: PlayerProps) {
             //move(delta) 
             //dampenVelocity(delta)
         }
-    }, -1)
+    }, 0)
 
     return (
         <>
             <mesh ref={meshRef}>
-                <mesh position={new Vector3( 0, 0, 0)}>
+                <mesh position={new Vector3( 0, .2, 0)}>
                     <boxGeometry args={[.10, .2, .1]}/>
                     <meshToonMaterial color={'#e56b6g'} gradientMap={threeTone} />
                 </mesh>
-                <mesh position={new Vector3( 0, 0.2, 0)}>
-                    <boxGeometry args={[0.1, 0.1, 0.1]}/>
+                <mesh position={new Vector3( 0, 0.4, 0)}>
+                    <boxGeometry args={[.1, .1, .1]}/>
                     <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />
                 </mesh>
             </mesh>

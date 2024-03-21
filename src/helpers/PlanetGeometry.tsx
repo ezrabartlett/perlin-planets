@@ -81,6 +81,7 @@ const PlanetGeometry = (props: PlanetGeometryProps) => {
 
     geometry.computeVertexNormals()
     geometry.computeBoundsTree();
+    
   }, []);
 
   return (
