@@ -132,7 +132,7 @@ export default function Planet(props: PlanetProps) {
             props.meshRef.current.position.y = 0;
         }
         updateAtmosphereUniforms();
-    })
+    }, -2)
 
     //useEffect(() => {
     //    TerrainGenerator.generatePlanet(meshRef, 'asdf')

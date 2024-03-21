@@ -53,7 +53,7 @@ export default function ThirdPersonCamera(props: ThirdPersonCameraProps) {
     useEffect(()=>{
         if(camera.current.parent != props.targets[props.cameraIndex].current) {
             props.targets[props.cameraIndex].current!.attach(camera.current);
-            camera.current.position.set(0, 0.6, -3)
+            camera.current.position.set(0, 1, -3)
             camera.current.rotation.set(0,0,0)
             camera.current.rotateY(Math.PI)
             camera.current.getWorldPosition(worldPosition)
