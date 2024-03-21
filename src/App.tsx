@@ -53,7 +53,7 @@ export default function App() {
         <UserInterface regenerate={regenerate} cameraIndex={cameraIndex} setCameraIndex={setCameraIndex}/>
         <Canvas dpr={window.devicePixelRatio * 1} key={key} gl={{ logarithmicDepthBuffer: true, antialias: true }} camera={{ position: [0, 0, 200] , far: 10000000}}>
           <Scene seed={seed} cameraIndex={cameraIndex} />
-          <Stats/>
+          {/*<Stats/>*/}
           {/*<Effect />*/}
         </Canvas>
       </Box>
