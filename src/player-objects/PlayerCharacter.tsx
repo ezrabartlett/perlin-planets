@@ -201,6 +201,8 @@ export default function Player(props: PlayerProps) {
             
             setTheta(theta+.0002);
             meshRef.current.translateZ((forward-backward)*500*maxSpeed)
+            meshRef.current.translateX((left-right)*500*maxSpeed)
+
             //setPlayerPosition(new Vector3(1000, 1000, 0))
             //meshRef.current.position.set(830000*Math.cos(theta),830000*Math.sin(theta),0)
             setYRotation(yRotation+(lookLeft-lookRight)*0.5*delta);
@@ -224,7 +226,7 @@ export default function Player(props: PlayerProps) {
                     <meshToonMaterial color={'#e56b6g'} gradientMap={threeTone} />
                 </mesh>
                 <mesh position={new Vector3( 0, 0.4, 0)}>
-                    <boxGeometry args={[10000, 10000, 10000]}/>
+                    <boxGeometry args={[.1, .1, .1]}/>
                     <meshToonMaterial color={'#e56b6f'} gradientMap={threeTone} />
                 </mesh>
             </mesh>
