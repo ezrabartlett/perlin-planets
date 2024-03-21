@@ -114,7 +114,7 @@ export default function Scene(props: SceneProps) {
             {<ThirdPersonCamera cameraRef={thirdPersonCameraRef} targets={[shipRef, shipRef, playerRef]} cameraIndex={props.cameraIndex}/>}
             
             <PerspectiveCamera ref={orbitCamera} fov={75} position={orbitCameraPosition} far={6000000000}/>
-            <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current}/>
+            <OrbitControls ref={orbitCameraRef} camera={orbitCamera.current} maxDistance={2000000000}/>
 
             <StarSystem cameraIndex={props.cameraIndex} orbitCamera={orbitCamera} thirdPersonCamera={thirdPersonCameraRef} setCameraTarget={setCameraTarget} time={3} seed={props.seed} playerRef={playerRef}/>
             <Ship startingPosition={new Vector3(780000, 0, 0)} startingAngle={new Quaternion(0, 0, 0)} meshRef={shipRef} />
