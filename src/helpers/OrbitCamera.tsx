@@ -19,8 +19,7 @@ export default function OrbitCamera(props: OrbitCameraProps) {
     let lerpStart = Date.now()
     const lerpTime = 3;
 
-    const [oldTarget, setOldTarget] = useState<meshRefType | null>(null)
-    const [lerping, setLerping] = useState(false)
+    const lerping = useRef(false)
 
     useEffect(() => {
         if ( orbitControlsRef.current ) {
@@ -33,7 +32,7 @@ export default function OrbitCamera(props: OrbitCameraProps) {
             offset.subVectors(currentCameraPosition, currentTarget)
 
             lerpStart = Date.now()
-            setLerping(true);
+            lerping.current = true;
             orbitControlsRef.current.target = currentTarget.clone()
         }
     }, [props.target])
