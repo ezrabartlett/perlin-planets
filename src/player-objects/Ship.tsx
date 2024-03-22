@@ -16,9 +16,6 @@ export default function Ship(props: ShipProps) {
     threeTone.minFilter = NearestFilter
     threeTone.magFilter = NearestFilter
 
-    const acceleration = new Vector3(0,0,0)
-    const accelerationConstant = 0
-    const dampingConstant = .95;
     // @ts-ignore
 
     let roleLeft = useRef(0);
@@ -29,7 +26,7 @@ export default function Ship(props: ShipProps) {
 
     let pitchUp = useRef(0);
     let pitchDown = useRef(0);
-
+    
     let accelerating = useRef(0);
     const velocityRef = useRef(0);
     const [maxSpeed, setMaxSpeed] = useState(20)
@@ -85,7 +82,7 @@ export default function Ship(props: ShipProps) {
                 pitchUp.current = 0;
                 break;
             case 'ShiftLeft':
-                accelerating.current = 0;
+                accelerating.current = -4;
                 break;
             case 'Enter':
                 if(maxSpeed === 100000){
@@ -117,7 +114,7 @@ export default function Ship(props: ShipProps) {
             if(velocityRef.current < 0){
                 velocityRef.current = 0;
             } else if(velocityRef.current > maxSpeed) {
-                velocityRef.current = maxSpeed;;
+                velocityRef.current = maxSpeed;
             }
 
             meshRef.current.translateZ(velocityRef.current*100000*delta);
