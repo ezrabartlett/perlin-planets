@@ -28,47 +28,43 @@ export default function Player(props: PlayerProps) {
     threeTone.magFilter = NearestFilter
 
     const velocity = new Vector3(0, 0, 0)
-    const acceleration = new Vector3(0,0,0)
-    const accelerationConstant = 0
     const dampingConstant = .95;
-    const playerHeight = 1;
     const rayOffset = 400;
 
     // @ts-ignore
-    const [yRotation, setYRotation] = useState(0)
-    const [playerPosition, setPlayerPosition] = useState(new Vector3())
+    const yRotation = useRef(0);
 
+    const foreward = useRef(0);
+    const backward = useRef(0);
 
-    const [forward, setForward] = useState(0)
-    const [backward, setBackward] = useState(0)
+    const right = useRef(0);
+    const left = useRef(0);
 
-    const [right, setRight] = useState(0)
-    const [left, setLeft] = useState(0)
-    const [maxSpeed, setMaxSpeed] = useState(100)
+    const maxSpeed = useRef(100);
 
-    const [lookLeft, setLookLeft] = useState(0)
-    const [lookRight, setLookRight] = useState(0)
+    const lookLeft = useRef(0);
+    const lookRight = useRef(0);
 
     window.addEventListener('keydown', (e) => {
         //window.alert(e.code)
         switch(e.code) {
             case 'KeyW':
-                setForward(1)
+                foreward.current = 1;
                 break;
             case 'KeyS':
-                setBackward(1)
+                backward.current = 1;
                 break;
             case 'KeyA':
-                setLeft(1)
+                left.current = 1;
                 break;
             case 'KeyD':
-                setRight(1)
+                right.current = 1;
                 break;
             case 'KeyQ':
-                setLookLeft(1)
+                lookLeft.current = 1;
                 break;
             case 'KeyE':
-                setLookRight(1)
+                lookRight.current = 1;
                 break;
             default:
                 // code block
@@ -77,24 +73,25 @@ export default function Player(props: PlayerProps) {
     window.addEventListener('keyup', (e) => {
         switch(e.code) {
             case 'KeyW':
-                setForward(0)
+                foreward.current = 0;
                 break;
             case 'KeyS':
-                setBackward(0)
+                backward.current = 0;
                 break;
             case 'KeyA':
-                setLeft(0)
+                left.current = 0;
                 break;
             case 'KeyD':
-                setRight(0)
+                right.current = 0;
                 break;
             case 'KeyQ':
-                setLookLeft(0)
+                lookLeft.current = 0;
                 break;
             case 'KeyE':
-                setLookRight(0)
+                lookRight.current = 0;
                 break;
             default:
+                // code block
         }
     })
 
@@ -109,11 +106,8 @@ export default function Player(props: PlayerProps) {
     }
 
     const rayDir = new Vector3()
-    let rayHitPosition = new Vector3(0, 0, 0);
     let rayOrigin = new Vector3(0,0,0);
-    const targetDirection = new Vector3(0,0,0);
     let playerVector = new Vector3(0,0,0);
-    const playerWorldPosition = new Vector3()
     const localHitPoint = new Vector3()
     let playerWorldDirection = new Vector3()
     let offSetVector = new Vector3(0,0,0);
@@ -135,8 +129,6 @@ export default function Player(props: PlayerProps) {
         //targetDirection.copy(player.position).negate()
         positionNormal.copy(player.position).normalize()
         playerUpNormal.copy(up).normalize()
-        //console.log('Position normal')
-        //console.log(positionNormal)
 
         cross.crossVectors(playerUpNormal, positionNormal).normalize()
 
@@ -155,11 +147,8 @@ export default function Player(props: PlayerProps) {
         //Calculate the ray direction
         rayDir.subVectors(rayOrigin, props.nearestBody!.current!.position).negate();
 
-        //rayOrigin.addVectors(playerWorldPosition, rayDir);
-
         playerCaster.set(rayOrigin,rayDir);
         const intersection = playerCaster.intersectObjects( [ props.nearestBody!.current! ] )[0];
-        //console.log(intersection)
         if(intersection && intersection.point){
             localHitPoint.copy(props.nearestBody!.current!.worldToLocal(intersection.point));
             meshRef.current!.position.setLength(localHitPoint.length()+200)
@@ -176,15 +165,6 @@ export default function Player(props: PlayerProps) {
 
     }, [props.nearestBody])
 
-    const calculatePlayerDownVector = () => {
-        let playerDirection = new Vector3()
-        meshRef!.current!.getWorldDirection(playerDirection)
-
-        let xVector = new Vector3(0,0,0);
-        let zVector = new Vector3(0,0,0);
-        xVector.x = playerDirection.x
-    }
-
     useFrame((state, delta) => {
         if (meshRef.current && props.nearestBody && props.nearestBody.current) {
             if(meshRef.current.parent != props.nearestBody.current) {
@@ -193,21 +173,12 @@ export default function Player(props: PlayerProps) {
 
             meshRef.current.getWorldDirection(playerWorldDirection)
             
-            meshRef.current.translateZ((forward-backward)*maxSpeed)
-            meshRef.current.translateX((left-right)*maxSpeed)
+            meshRef.current.translateZ((foreward.current-backward.current)*maxSpeed.current)
+            meshRef.current.translateX((left.current-right.current)*maxSpeed.current)
 
-            //setPlayerPosition(new Vector3(1000, 1000, 0))
-            //meshRef.current.position.set(830000*Math.cos(theta),830000*Math.sin(theta),0)
-            setYRotation(yRotation+(lookLeft-lookRight)*0.5*delta);
+            yRotation.current = yRotation.current+(lookLeft.current-lookRight.current)*0.5*delta;
             calculateAndSetPlayerPosition()
-            meshRef.current.rotateY(yRotation)
-            //console.log(`player direction = ${playerWorldDirection}`)
-            
-            //accelerationConstant += delta*
-            //meshRef.current.translateZ((accelerating)*0.5*maxSpeed)
-            //accelerate(delta)
-            //move(delta) 
-            //dampenVelocity(delta)
+            meshRef.current.rotateY(yRotation.current)
         }
     }, 0)
 
