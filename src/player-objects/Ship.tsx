@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGLTF } from '@react-three/drei'
 import { Vector3, Mesh, MeshToonMaterial, TextureLoader, NearestFilter, Texture, BoxGeometry, Quaternion, MeshBasicMaterial, Euler} from 'three';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { meshRefType } from '../types';
-import { UFOModel } from '../assets/models/Ufo'
 
 export type ShipProps = {
     startingPosition: Vector3
@@ -17,48 +16,47 @@ export default function Ship(props: ShipProps) {
     threeTone.minFilter = NearestFilter
     threeTone.magFilter = NearestFilter
 
-    const velocity = new Vector3(0, 0, 0)
     const acceleration = new Vector3(0,0,0)
     const accelerationConstant = 0
     const dampingConstant = .95;
     // @ts-ignore
 
-    const [roleLeft, setRoleLeft] = useState(0)
-    const [roleRight, setRoleRight] = useState(0)
+    let roleLeft = useRef(0);
+    let roleRight = useRef(0);
 
-    const [yawLeft, setYawLeft] = useState(0)
-    const [yawRight, setYawRight] = useState(0)
+    let yawLeft = useRef(0);
+    let yawRight = useRef(0);
 
-    const [pitchUp, setPitchUp] = useState(0)
-    const [pitchDown, setPitchDown] = useState(0)
+    let pitchUp = useRef(0);
+    let pitchDown = useRef(0);
 
-    const [accelerating, setAccelerating] = useState(0)
-
-    const [maxSpeed, setMaxSpeed] = useState(100000)
+    let accelerating = useRef(0);
+    const velocityRef = useRef(0);
+    const [maxSpeed, setMaxSpeed] = useState(20)
 
     window.addEventListener('keydown', (e) => {
         //window.alert(e.code)
         switch(e.code) {
             case 'KeyQ':
-                setRoleRight(1)
+                roleLeft.current = 1;
                 break;
             case 'KeyE':
-                setRoleLeft(1)
+                roleRight.current = 1;
                 break;
             case 'KeyA':
-                setYawLeft(1)
+                yawLeft.current = 1 ;
                 break;
             case 'KeyD':
-                setYawRight(1)
+                yawRight.current = 1;
                 break;
             case 'KeyW':
-                setPitchDown(1)
+                pitchDown.current = 1;
                 break;
             case 'KeyS':
-                setPitchUp(1)
+                pitchUp.current = 1;
                 break;
             case 'ShiftLeft':
-                setAccelerating(1)
+                accelerating.current = 1
                 break;
             default:
                 // code block
@@ -69,25 +67,25 @@ export default function Ship(props: ShipProps) {
     window.addEventListener('keyup', (e) => {
         switch(e.code) {
             case 'KeyQ':
-                setRoleRight(0)
+                roleLeft.current = 0;
                 break;
             case 'KeyE':
-                setRoleLeft(0)
+                roleRight.current = 0;
                 break;
             case 'KeyA':
-                setYawLeft(0)
+                yawLeft.current = 0 ;
                 break;
             case 'KeyD':
-                setYawRight(0)
+                yawRight.current = 0;
                 break;
             case 'KeyW':
-                setPitchDown(0)
+                pitchDown.current = 0;
                 break;
             case 'KeyS':
-                setPitchUp(0)
+                pitchUp.current = 0;
                 break;
             case 'ShiftLeft':
-                setAccelerating(0)
+                accelerating.current = 0;
                 break;
             case 'Enter':
                 if(maxSpeed === 100000){
@@ -103,42 +101,26 @@ export default function Ship(props: ShipProps) {
         }
     })
 
-    const accelerate = (delta: number) => {
-        if (meshRef.current) {
-            velocity.add(acceleration.normalize().multiplyScalar(accelerationConstant*delta*accelerating))
-            if(velocity.length()>=maxSpeed) {
-                velocity.normalize().multiplyScalar(maxSpeed)
-            }
-        }
-    }
-
     useEffect(() => {
         if (meshRef.current) {
             meshRef.current.position.copy(props.startingPosition)
         }
     }, [])
 
-    const move = (delta: number) => {
-        if (meshRef.current) {
-            meshRef.current.position.add(velocity.multiplyScalar(delta))
-        }
-    }
-
-    const dampenVelocity = (delta: number) => {
-        velocity.multiplyScalar(dampingConstant*delta)
-    }
-
     useFrame((state, delta) => {
         if (meshRef.current) {
-            meshRef.current.getWorldDirection(acceleration)
-            meshRef.current.rotateZ((roleLeft-roleRight)*0.5*delta)
-            meshRef.current.rotateY((yawLeft-yawRight)*0.5*delta)
-            meshRef.current.rotateX((pitchDown-pitchUp)*0.5*delta)
-            //accelerationConstant += delta*
-            meshRef.current.translateZ((accelerating)*0.5*maxSpeed)
-            //accelerate(delta)
-            //move(delta)
-            //dampenVelocity(delta)
+            meshRef.current.rotateZ((roleRight.current-roleLeft.current)*0.5*delta)
+            meshRef.current.rotateY((yawLeft.current-yawRight.current)*0.5*delta)
+            meshRef.current.rotateX((pitchDown.current-pitchUp.current)*0.5*delta)
+
+            velocityRef.current+=accelerating.current*4*delta
+            if(velocityRef.current < 0){
+                velocityRef.current = 0;
+            } else if(velocityRef.current > maxSpeed) {
+                velocityRef.current = maxSpeed;;
+            }
+
+            meshRef.current.translateZ(velocityRef.current*100000*delta);
         }
     }, -1)
 
