@@ -22,6 +22,7 @@ export default function App() {
   const [cameraIndex, setCameraIndex] = useState(0)
 
   const regenerate = (seed: string) => {
+    console.log(seed);
     setSeed(seed)
     setUseOrbitCamera(true);
     resetScene()
