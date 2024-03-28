@@ -14,7 +14,7 @@ export default function UserInterface(props: UserInterfaceProps) {
     const [coordinates, setCoordinates] = useState('');
 
     return (
-      <div className="absolute top-0 w-full h-full z-50 bg-transparent text-[#22577a] font-mono h-400 underline pointer-events-none [&>*]:pointer-events-auto p-10">
+      <div className="absolute select-none top-0 w-full h-full z-50 bg-transparent text-[#22577a] font-mono h-400 underline pointer-events-none [&>*]:pointer-events-auto p-10">
         <div className='float-right flex flex-col space-y-4 w-80 justify-around'>
             <div className='w-full flex flex-row space-x-2 justify-around'>
                 <input type="text" placeholder="Coordinates" value={coordinates} onChange={(e)=>(setCoordinates(e.currentTarget.value))} className="input input-bordered text-white basis-3/4" />

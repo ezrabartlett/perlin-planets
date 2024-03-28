@@ -72,7 +72,7 @@ export default function StarSystem(props: StarSystemProps) {
   const maxGasGiantRadius = 2500000
 
   const minMoonRadius = 30000
-  const maxMoonRadius = 600000
+  const maxMoonRadius = 300000
 
   const minInnerPlanetMoons = 0
   const maxInnerPlanetMoons = 2

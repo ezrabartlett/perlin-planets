@@ -28,8 +28,15 @@ export default function Ship(props: ShipProps) {
     let pitchDown = useRef(0);
     
     let accelerating = useRef(0);
+
     const velocityRef = useRef(0);
-    const [maxSpeed, setMaxSpeed] = useState(20)
+
+    const [maxSpeed, setMaxSpeed] = useState(20);
+    const [maxAngularXSpeed, setMaxAngularXSpeed] = useState(2);
+    const [angularDamping, setAngularDamping] = useState(1);
+    const [maxAngularYSpeed, setMaxAngularYSpeed] = useState(10);
+    const angularVelocityXRef = useRef(0);
+    const angularVelocityYRef = useRef(0);
 
     window.addEventListener('keydown', (e) => {
         //window.alert(e.code)
@@ -107,15 +114,18 @@ export default function Ship(props: ShipProps) {
     useFrame((state, delta) => {
         if (meshRef.current) {
             meshRef.current.rotateZ((roleRight.current-roleLeft.current)*0.5*delta)
-            meshRef.current.rotateY((yawLeft.current-yawRight.current)*0.5*delta)
             meshRef.current.rotateX((pitchDown.current-pitchUp.current)*0.5*delta)
 
-            velocityRef.current+=accelerating.current*4*delta
-            if(velocityRef.current < 0){
-                velocityRef.current = 0;
-            } else if(velocityRef.current > maxSpeed) {
-                velocityRef.current = maxSpeed;
+            if(yawLeft.current-yawRight.current==0){
+                angularVelocityXRef.current=angularVelocityXRef.current/(delta*150);
+            } else {
+                angularVelocityXRef.current+=(yawLeft.current-yawRight.current)*6*delta
+                angularVelocityXRef.current=Math.min(Math.max(-maxAngularXSpeed, angularVelocityXRef.current), maxAngularXSpeed)
             }
+            meshRef.current.rotateY(angularVelocityXRef.current*0.5*delta)
+
+            velocityRef.current+=accelerating.current*4*delta
+            velocityRef.current=Math.min(Math.max(0, velocityRef.current), maxSpeed)
 
             meshRef.current.translateZ(velocityRef.current*100000*delta);
         }
