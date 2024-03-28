@@ -40,7 +40,7 @@ export default function Player(props: PlayerProps) {
     const right = useRef(0);
     const left = useRef(0);
 
-    const maxSpeed = useRef(100);
+    const maxSpeed = useRef(100000);
 
     const lookLeft = useRef(0);
     const lookRight = useRef(0);
@@ -173,8 +173,8 @@ export default function Player(props: PlayerProps) {
 
             meshRef.current.getWorldDirection(playerWorldDirection)
             
-            meshRef.current.translateZ((foreward.current-backward.current)*maxSpeed.current)
-            meshRef.current.translateX((left.current-right.current)*maxSpeed.current)
+            meshRef.current.translateZ((foreward.current-backward.current)*maxSpeed.current*delta)
+            meshRef.current.translateX((left.current-right.current)*maxSpeed.current*delta)
 
             yRotation.current = yRotation.current+(lookLeft.current-lookRight.current)*0.5*delta;
             calculateAndSetPlayerPosition()
